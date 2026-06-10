@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>银发健康助手 - 消息提醒</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <main class="main">
+      <!-- 页面标题 -->
+      <section class="page-header">
+        <div class="page-header__title">消息提醒</div>
+        <div class="page-header__subtitle">您的健康提醒和异常通知</div>
+      </section>
+
+      <!-- 当前提醒 -->
+      <section class="records-section">
+        <div class="section-header">
+          <span class="material-icons" style="color:var(--primary-color);font-size:36px;">alarm</span>
+          <span class="section-title">当前提醒</span>
+          <span class="reminder-active-count" id="activeCount"></span>
+          <button class="section-btn" id="refreshBtn" style="margin-left:auto;">
+            <span class="material-icons" style="font-size:28px;">refresh</span>
+          </button>
+        </div>
+        <div class="reminder-list" id="reminderList">
+          <div class="loading" style="display:flex;">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在加载提醒...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 健康异常通知 - 重点突出！ -->
+      <section class="records-section">
+        <div class="section-header">
+          <span class="material-icons" style="color:#ef4444;font-size:36px;">warning</span>
+          <span class="section-title">健康异常提醒</span>
+        </div>
+        <div id="alertList"></div>
+      </section>
+
+      <!-- 已关闭提醒（折叠） -->
+      <section class="records-section">
+        <div class="section-header" id="closedHeader" style="cursor:pointer;">
+          <span class="material-icons" style="color:var(--text-muted);font-size:36px;">archive</span>
+          <span class="section-title" style="color:var(--text-muted);">已关闭的提醒</span>
+          <span class="closed-count" id="closedCount">(0)</span>
+          <span class="material-icons" id="closedArrow" style="margin-left:auto;font-size:28px;">expand_more</span>
+        </div>
+        <div class="reminder-closed-list" id="closedList" style="display:none;"></div>
+      </section>
+
+      <!-- 引导语 -->
+      <section class="records-section">
+        <div class="reminder-guide">
+          <div class="reminder-guide__icon">💬</div>
+          <div class="reminder-guide__text">想添加新提醒？</div>
+          <div class="reminder-guide__examples">
+            直接和助手说就行！<br>
+            例如："提醒我每天早上8点吃降压药"<br>
+            或："每天晚上提醒我测血糖"
+          </div>
+          <button class="reminder-guide__btn" onclick="window.location.href='index.html'">
+            去和助手对话 →
+          </button>
+        </div>
+      </section>
+
+      <!-- 底部导航栏 -->
+      <nav class="bottom-nav">
+        <button class="bottom-nav__item" onclick="window.location.href='index.html'">
+          <span class="material-icons">home</span>
+          <span class="bottom-nav__label">首页</span>
+        </button>
+        <button class="bottom-nav__item" onclick="window.location.href='records.html'">
+          <span class="material-icons">folder</span>
+          <span class="bottom-nav__label">健康档案</span>
+        </button>
+        <button class="bottom-nav__item bottom-nav__item--active">
+          <span class="material-icons">message</span>
+          <span class="bottom-nav__label">消息提醒</span>
+        </button>
+        <button class="bottom-nav__item" onclick="window.location.href='profile.html'">
+          <span class="material-icons">person</span>
+          <span class="bottom-nav__label">我的</span>
+        </button>
+      </nav>
+    </main>
+
+    <script type="module" src="./reminders.js"></script>
+  </body>
+</html>

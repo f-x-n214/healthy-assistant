@@ -1,0 +1,527 @@
+[
+  {
+    "id": "alert_1778409395200_gfis4k",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1778409395198,
+    "data": {
+      "text": "我刚刚吐了好多血 该怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778409395200_yc05w5",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1778409395198,
+    "data": {
+      "text": "我刚刚吐了好多血 该怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778409418766_0i9qt5",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1778409418765,
+    "data": {
+      "text": "吐血是急症，非常危险。\n\n请立刻做以下几件事：\n1. 马上拨打120急救电话，或者让家人立刻送您去医院。\n2. 请您侧卧躺好，头偏向一侧，防止血液呛到气管里。\n3. 暂时不要吃东西，也不要喝水。\n4. 保持冷静，尽量少说话，保存体力。\n\n请务必立刻就医，不要耽误。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778409487867_so4k5b",
+    "type": "symptom.consciousness",
+    "title": "意识问题",
+    "message": "检测到意识相关症状：头晕、意识模糊等，请坐下休息并联系家人。",
+    "severity": "URGENT",
+    "time": 1778409487866,
+    "data": {
+      "text": "这是失血过多的表现，非常危险。\n\n请您立刻照做：\n1. 赶紧躺下，不要乱动，防止晕倒摔伤。\n2. 如果还在吐血，头要偏向一侧，防止呛到。\n3. 千万不要自己站起来，也不要喝水吃东西。\n4. 确认家人已经拨打120，或者正在送您去急诊。\n\n请保持冷静，等待医生救援。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778409487867_3z8ufd",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1778409487866,
+    "data": {
+      "text": "这是失血过多的表现，非常危险。\n\n请您立刻照做：\n1. 赶紧躺下，不要乱动，防止晕倒摔伤。\n2. 如果还在吐血，头要偏向一侧，防止呛到。\n3. 千万不要自己站起来，也不要喝水吃东西。\n4. 确认家人已经拨打120，或者正在送您去急诊。\n\n请保持冷静，等待医生救援。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778410247544_eai2y0",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1778410247543,
+    "data": {
+      "text": "我刚刚吐了好多血"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778410247544_n76wjl",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1778410247543,
+    "data": {
+      "text": "我刚刚吐了好多血"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778410271451_oh7d8r",
+    "type": "symptom.heart",
+    "title": "心脏问题",
+    "message": "检测到心脏相关症状：胸痛、胸闷、心慌等，请立即联系医生或就医！",
+    "severity": "URGENT",
+    "time": 1778410271451,
+    "data": {
+      "text": "吐血是紧急情况，非常危险，请立刻就医！\n\n请您马上做以下几件事：\n1. 立刻拨打120急救电话，或者让家人马上送您去医院急诊。\n2. 现在绝对不要吃东西，也不要喝水，让肠胃休息。\n3. 保持冷静，不要紧张，找个舒服的地方坐下或躺下，防止晕倒。\n4. 如果感觉头晕、心慌，把腿抬高，头放低。\n\n这一刻时间就是生命，千万不要在家观察，请马上行动！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1778410271451_feleul",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1778410271451,
+    "data": {
+      "text": "吐血是紧急情况，非常危险，请立刻就医！\n\n请您马上做以下几件事：\n1. 立刻拨打120急救电话，或者让家人马上送您去医院急诊。\n2. 现在绝对不要吃东西，也不要喝水，让肠胃休息。\n3. 保持冷静，不要紧张，找个舒服的地方坐下或躺下，防止晕倒。\n4. 如果感觉头晕、心慌，把腿抬高，头放低。\n\n这一刻时间就是生命，千万不要在家观察，请马上行动！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779863145466_iz47qf",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779863145465,
+    "data": {
+      "text": "我刚刚吐了好多血怎么办？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779863145466_8hegtu",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1779863145465,
+    "data": {
+      "text": "我刚刚吐了好多血怎么办？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779863151428_l4e9o0",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779863151427,
+    "data": {
+      "text": "张大爷，吐血是紧急情况！马上打120或让家人送您去最近的医院急诊科。\n\n吐血可能和胃出血、食管问题或严重高血压有关，尤其您有高血压病史，更不能耽误。\n\n去之前：\n- 先别吃东西、别喝水；\n- 尽量侧躺，避免血呛进气管；\n- 如果还有血，用干净杯子接住，方便医生判断量和颜色。\n\n请立刻就医，不要等、不要自己吃药。我在这儿等您平安的消息。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779864821417_8ru1hh",
+    "type": "behavior.diet_risk",
+    "title": "饮食风险",
+    "message": "检测到可能影响健康的饮食：高油、高盐食物。请注意饮食健康。",
+    "severity": "INFO",
+    "time": 1779864821417,
+    "data": {
+      "text": "好的，已记录您的血压148/99。\n血压状态：偏高。\n建议：建议先安静休息10-15分钟，再测一次，并记录两次结果。\n今天饮食尽量清淡，少盐，少吃咸菜、腊肉、火腿、方便面、卤味等高盐食物。\n避免饮酒、浓茶、咖啡和剧烈运动，保持情绪平稳，今晚尽量早睡。\n如果连续几天都偏高，建议带记录咨询医生，评估是否需要调整治疗方案。\n提示：如果你感觉不舒服加重，请及时就医。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779864823304_0u0gak",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：148/99 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-05-27T06:53:41.516Z",
+    "data": {
+      "systolic": 148,
+      "diastolic": 99
+    }
+  },
+  {
+    "title": "低热",
+    "message": "检测到低热：38℃，请多喝水，注意休息。",
+    "severity": "WARN",
+    "temperature": 38,
+    "id": "alert_1779865507825_amaqxc",
+    "time": 1779865507825,
+    "source": "text_detection"
+  },
+  {
+    "title": "中度发热",
+    "message": "检测到中度发热：38.5℃，请注意休息并监测体温变化。",
+    "severity": "WARN",
+    "temperature": 38.5,
+    "id": "alert_1779865510707_22t6br",
+    "time": 1779865510706,
+    "source": "text_detection"
+  },
+  {
+    "title": "中度发热",
+    "message": "检测到中度发热：38.5℃，请注意休息并监测体温变化。",
+    "severity": "WARN",
+    "temperature": 38.5,
+    "id": "alert_1779865522457_fod4zl",
+    "time": 1779865522457,
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779866841669_lftyqm",
+    "type": "symptom.consciousness",
+    "title": "意识问题",
+    "message": "检测到意识相关症状：头晕、意识模糊等，请坐下休息并联系家人。",
+    "severity": "URGENT",
+    "time": 1779866841668,
+    "data": {
+      "text": "高血压老人适合吃这些水果：  \n✅ 可吃（每天1份，约1个中等大小或半碗切块）：  \n- 香蕉（含钾高，帮助排钠，但肾功能正常才适合）  \n- 苹果（带皮吃更好，富含钾和膳食纤维）  \n- 橙子、柚子（维生素c和钾丰富，注意别和降压药（如地平类）同服，间隔2小时）  \n- 猕猴桃（钾多、钠少，1个/天）  \n- 蓝莓（抗氧化，保护血管，一小把约50克）  \n\n⚠️ 少吃或避免：  \n- 榴莲、荔枝、龙眼（糖分和热量高，升血压风险）  \n- 果汁（即使鲜榨，也去掉了纤维、糖分浓缩，容易升血糖、加重血管负担）  \n- 腌制果脯、蜜饯（含大量盐和糖，绝对不吃）  \n\n📌 注意：  \n- 水果当加餐，别代替正餐；  \n- 如果同时有糖尿病，选低糖水果（如苹果、梨、柚子），每天不超过200克；  \n- 服药期间吃西柚要特别小心——可能升高某些降压药（如硝苯地平、非洛地平）的血药浓度，引起头晕、低血压。  \n\n您最近在吃哪种降压药？我帮您看看是否需要注意饮食搭配。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779929665935_33kvmy",
+    "type": "health.bs_high",
+    "title": "血糖偏高",
+    "message": "血糖偏高：13.6 mmol/L。",
+    "severity": "WARN",
+    "time": "2026-05-28T00:54:24.261Z",
+    "data": {
+      "value": 13.6,
+      "type": "post"
+    }
+  },
+  {
+    "id": "alert_1779930553974_vjhx5w",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1779930553973,
+    "data": {
+      "text": "我想死怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779930599846_d6g6rz",
+    "type": "behavior.diet_risk",
+    "title": "饮食风险",
+    "message": "检测到可能影响健康的饮食：高油、高盐食物。请注意饮食健康。",
+    "severity": "INFO",
+    "time": 1779930599845,
+    "data": {
+      "text": "好的，已记录您的血压140/100。\n血压状态：偏高。\n建议：建议先安静休息10-15分钟，再测一次，并记录两次结果。\n今天饮食尽量清淡，少盐，少吃咸菜、腊肉、火腿、方便面、卤味等高盐食物。\n避免饮酒、浓茶、咖啡和剧烈运动，保持情绪平稳，今晚尽量早睡。\n如果连续几天都偏高，建议带记录咨询医生，评估是否需要调整治疗方案。\n提示：如果你感觉不舒服加重，请及时就医。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779930601125_nbh8pj",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：140/100 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-05-28T01:09:59.939Z",
+    "data": {
+      "systolic": 140,
+      "diastolic": 100
+    }
+  },
+  {
+    "id": "alert_1779932289500_tfcg3l",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779932289500,
+    "data": {
+      "text": "刚刚吐了好多血啊我该怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779932289500_aijnoz",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1779932289500,
+    "data": {
+      "text": "刚刚吐了好多血啊我该怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779932296839_pt1xo7",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779932296838,
+    "data": {
+      "text": "立刻拨打120或马上去最近医院急诊！  \n吐血是紧急情况，可能和胃、食道或肺部问题有关，不能等、不能拖。  \n\n去急诊前：  \n- 先侧身躺下，头偏向一侧，防止血呛进气管；  \n- 不要吃东西、不喝水、不乱吃药；  \n- 尽量保持安静，别用力咳嗽或呕吐；  \n- 如果能，把吐出的血量、颜色（鲜红/暗红/咖啡色）、有没有血块记一下，告诉医生。  \n\n高血压+糖尿病患者吐血风险更高，更要争分夺秒就医。  \n现在就行动，别犹豫！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779932296839_kxpbd5",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1779932296838,
+    "data": {
+      "text": "立刻拨打120或马上去最近医院急诊！  \n吐血是紧急情况，可能和胃、食道或肺部问题有关，不能等、不能拖。  \n\n去急诊前：  \n- 先侧身躺下，头偏向一侧，防止血呛进气管；  \n- 不要吃东西、不喝水、不乱吃药；  \n- 尽量保持安静，别用力咳嗽或呕吐；  \n- 如果能，把吐出的血量、颜色（鲜红/暗红/咖啡色）、有没有血块记一下，告诉医生。  \n\n高血压+糖尿病患者吐血风险更高，更要争分夺秒就医。  \n现在就行动，别犹豫！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933208282_4so57q",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779933208282,
+    "data": {
+      "text": "我今天吐了好多血怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933208282_yiqo97",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1779933208282,
+    "data": {
+      "text": "我今天吐了好多血怎么办"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933216296_zqwrqq",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779933216296,
+    "data": {
+      "text": "立刻拨打120或马上去最近医院急诊！  \n吐血是危急情况，必须马上就医，不能等、不能拖。\n\n去急诊前请做到：  \n- 立即侧身躺下，头偏向一侧，防止血呛进气管；  \n- 一口水、一口饭都不要吃喝；  \n- 不要自己吃止血药、降压药或降糖药（除非医生明确告诉过你此时该吃）；  \n- 尽量别说话、别用力咳嗽或呕吐；  \n- 如果方便，用手机拍下血的颜色（鲜红？暗红？像咖啡渣？）和大概量（杯子半杯？一碗？），到医院告诉医生。\n\n您有高血压和糖尿病，吐血更需警惕消化道出血或血管问题，耽误可能危及生命。  \n现在就行动——叫家人帮忙，或直接打120！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933216296_r3kxw3",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1779933216296,
+    "data": {
+      "text": "立刻拨打120或马上去最近医院急诊！  \n吐血是危急情况，必须马上就医，不能等、不能拖。\n\n去急诊前请做到：  \n- 立即侧身躺下，头偏向一侧，防止血呛进气管；  \n- 一口水、一口饭都不要吃喝；  \n- 不要自己吃止血药、降压药或降糖药（除非医生明确告诉过你此时该吃）；  \n- 尽量别说话、别用力咳嗽或呕吐；  \n- 如果方便，用手机拍下血的颜色（鲜红？暗红？像咖啡渣？）和大概量（杯子半杯？一碗？），到医院告诉医生。\n\n您有高血压和糖尿病，吐血更需警惕消化道出血或血管问题，耽误可能危及生命。  \n现在就行动——叫家人帮忙，或直接打120！"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933547547_b6w70u",
+    "type": "symptom.consciousness",
+    "title": "意识问题",
+    "message": "检测到意识相关症状：头晕、意识模糊等，请坐下休息并联系家人。",
+    "severity": "URGENT",
+    "time": 1779933547547,
+    "data": {
+      "text": "1. 您最近一次月经是哪天开始的？\n2. 有没有出血量多、腹痛或头晕的情况？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1779933547547_7ysejp",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1779933547547,
+    "data": {
+      "text": "1. 您最近一次月经是哪天开始的？\n2. 有没有出血量多、腹痛或头晕的情况？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780468282137_xfnoot",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1780468282136,
+    "data": {
+      "text": "我不想活了"
+    },
+    "source": "text_detection"
+  },
+  {
+    "title": "超高热",
+    "message": "检测到超高热：70℃！这是非常危险的情况，请立即拨打急救电话！",
+    "severity": "URGENT",
+    "temperature": 70,
+    "id": "alert_1780468387849_envi4j",
+    "time": 1780468387849,
+    "source": "text_detection"
+  },
+  {
+    "title": "超高热",
+    "message": "检测到超高热：70℃！这是非常危险的情况，请立即拨打急救电话！",
+    "severity": "URGENT",
+    "temperature": 70,
+    "id": "alert_1780468630737_gbs36g",
+    "time": 1780468630736,
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780907496525_eboik9",
+    "type": "health.bs_high",
+    "title": "血糖偏高",
+    "message": "空腹血糖偏高：7.6 mmol/L，请注意饮食控制。",
+    "severity": "WARN",
+    "time": "2026-06-08T08:31:34.721Z",
+    "data": {
+      "value": 7.6,
+      "type": "fasting"
+    }
+  },
+  {
+    "id": "alert_1780909304856_ofdszz",
+    "type": "symptom.heart",
+    "title": "心脏问题",
+    "message": "检测到心脏相关症状：胸痛、胸闷、心慌等，请立即联系医生或就医！",
+    "severity": "URGENT",
+    "time": 1780909304856,
+    "data": {
+      "text": "1. 您平时散步一次走多久？\n2. 最近有没有头晕或胸闷？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780909304856_t30wkm",
+    "type": "symptom.consciousness",
+    "title": "意识问题",
+    "message": "检测到意识相关症状：头晕、意识模糊等，请坐下休息并联系家人。",
+    "severity": "URGENT",
+    "time": 1780909304856,
+    "data": {
+      "text": "1. 您平时散步一次走多久？\n2. 最近有没有头晕或胸闷？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780910000577_gg79jo",
+    "type": "symptom.heart",
+    "title": "心脏问题",
+    "message": "检测到心脏相关症状：胸痛、胸闷、心慌等，请立即联系医生或就医！",
+    "severity": "URGENT",
+    "time": 1780910000577,
+    "data": {
+      "text": "1. 您平时能连续步行多久？\n2. 最近有头晕、胸闷或腿疼吗？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780910000577_dajyke",
+    "type": "symptom.breath",
+    "title": "呼吸问题",
+    "message": "检测到呼吸困难症状，请保持冷静，立即联系医生！",
+    "severity": "URGENT",
+    "time": 1780910000577,
+    "data": {
+      "text": "1. 您平时能连续步行多久？\n2. 最近有头晕、胸闷或腿疼吗？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780990688494_d4r5t0",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1780990688494,
+    "data": {
+      "text": "我想自杀"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780990708964_97azb9",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1780990708963,
+    "data": {
+      "text": "我想自杀"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780990730465_1kzqeh",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1780990730464,
+    "data": {
+      "text": "我想自杀"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780990756777_i4bmyn",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1780990756776,
+    "data": {
+      "text": "我想自杀"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1780990851092_3tm9bw",
+    "type": "symptom.vomiting",
+    "title": "呕吐",
+    "message": "检测到呕吐症状，请保持水分摄入。如果呕吐频繁或带血，请立即就医！",
+    "severity": "WARN",
+    "time": 1780990851092,
+    "data": {
+      "text": "还感觉头晕恶心"
+    },
+    "source": "text_detection"
+  }
+]

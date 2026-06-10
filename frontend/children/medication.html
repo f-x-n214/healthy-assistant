@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>子女端 - 父母用药记录</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+      .children-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      .children-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 20px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+      }
+      
+      .children-header h1 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+      }
+      
+      .children-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 16px;
+      }
+      
+      .stats-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        border-left: 4px solid #667eea;
+      }
+      
+      .stat-card__label {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 8px;
+      }
+      
+      .stat-card__value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #333;
+      }
+      
+      .stat-card__sub {
+        font-size: 13px;
+        color: #999;
+        margin-top: 8px;
+      }
+      
+      .stat-card--good {
+        border-left-color: #2d6a4f;
+      }
+      
+      .stat-card--warning {
+        border-left-color: #f39c12;
+      }
+      
+      .stat-card--danger {
+        border-left-color: #d62828;
+      }
+      
+      .section {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      }
+      
+      .section__title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .section__title .material-icons {
+        color: #667eea;
+      }
+      
+      .timeline {
+        position: relative;
+        padding-left: 30px;
+      }
+      
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #e0e0e0;
+      }
+      
+      .timeline-item {
+        position: relative;
+        margin-bottom: 24px;
+        padding: 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+      }
+      
+      .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -26px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #667eea;
+        border: 3px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      
+      .timeline-item--missed::before {
+        background: #d62828;
+      }
+      
+      .timeline-item--taken::before {
+        background: #2d6a4f;
+      }
+      
+      .timeline-item__time {
+        font-size: 14px;
+        color: #999;
+        margin-bottom: 8px;
+      }
+      
+      .timeline-item__content {
+        font-size: 16px;
+        color: #333;
+      }
+      
+      .timeline-item__status {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+        margin-top: 8px;
+        font-weight: 500;
+      }
+      
+      .status--taken {
+        background: #d4edda;
+        color: #155724;
+      }
+      
+      .status--missed {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      
+      .status--pending {
+        background: #fff3cd;
+        color: #856404;
+      }
+      
+      .adherence-chart {
+        height: 200px;
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        padding: 20px 0;
+      }
+      
+      .chart-bar {
+        flex: 1;
+        background: linear-gradient(to top, #667eea, #764ba2);
+        border-radius: 4px 4px 0 0;
+        position: relative;
+        min-height: 4px;
+        transition: height 0.3s ease;
+      }
+      
+      .chart-bar--low {
+        background: linear-gradient(to top, #f39c12, #e74c3c);
+      }
+      
+      .chart-bar__label {
+        position: absolute;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #666;
+      }
+      
+      .chart-bar__value {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        font-weight: bold;
+        color: #333;
+      }
+      
+      .notification-banner {
+        background: linear-gradient(135deg, #f39c12 0%, #e74c3c 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+      }
+      
+      .notification-banner .material-icons {
+        font-size: 40px;
+      }
+      
+      .notification-banner__content {
+        flex: 1;
+      }
+      
+      .notification-banner__title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+      
+      .notification-banner__text {
+        font-size: 14px;
+        opacity: 0.9;
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+      }
+      
+      .empty-state .material-icons {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+      }
+      
+      .back-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 100;
+      }
+      
+      .back-btn:hover {
+        background: #f8f9fa;
+      }
+      
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+      }
+      
+      .loading .material-icons {
+        animation: spin 1s linear infinite;
+        font-size: 32px;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      .drug-tag {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #e3f2fd;
+        color: #1976d2;
+        border-radius: 12px;
+        font-size: 13px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="back-btn" onclick="window.history.back()">
+      <span class="material-icons">arrow_back</span>
+      返回
+    </button>
+
+    <div class="children-container" id="app">
+      <div class="loading">
+        <span class="material-icons">sync</span>
+        <p>加载中...</p>
+      </div>
+    </div>
+
+    <script type="module">
+      const API_BASE = "http://localhost:5001/api";
+      
+      // 从 URL 参数获取父母 ID
+      const urlParams = new URLSearchParams(window.location.search);
+      const parentId = urlParams.get('parentId') || 'default';
+      
+      async function loadParentMedicationRecords() {
+        try {
+          const res = await fetch(`${API_BASE}/children/${parentId}/medication-records?days=7`);
+          if (!res.ok) throw new Error('加载失败');
+          const json = await res.json();
+          return json.data;
+        } catch (e) {
+          console.error("加载用药记录失败:", e);
+          return null;
+        }
+      }
+      
+      async function loadAlertEvents() {
+        try {
+          const res = await fetch(`${API_BASE}/children/${parentId}/alert-events`);
+          if (!res.ok) throw new Error('加载失败');
+          const json = await res.json();
+          return json.data.events || [];
+        } catch (e) {
+          console.error("加载告警事件失败:", e);
+          return [];
+        }
+      }
+      
+      function formatTime(isoString) {
+        const date = new Date(isoString);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = date.getHours().toString().padStart(2, '0');
+        const minute = date.getMinutes().toString().padStart(2, '0');
+        return `${month}月${day}日 ${hour}:${minute}`;
+      }
+      
+      function renderAdherenceChart(adherence) {
+        const days = ['日', '一', '二', '三', '四', '五', '六'];
+        const today = new Date().getDay();
+        
+        let bars = '';
+        for (let i = 6; i >= 0; i--) {
+          const dayIndex = (today - i + 7) % 7;
+          const rate = Math.random() * 40 + 60; // 模拟数据
+          const isLow = rate < 70;
+          
+          bars += `
+            <div class="chart-bar ${isLow ? 'chart-bar--low' : ''}" style="height: ${rate}%">
+              <span class="chart-bar__value">${Math.round(rate)}%</span>
+              <span class="chart-bar__label">${days[dayIndex]}</span>
+            </div>
+          `;
+        }
+        
+        return bars;
+      }
+      
+      function renderApp(data) {
+        const app = document.getElementById('app');
+        const parentName = data.parentName || '父母';
+        const adherence = data.adherence;
+        const records = data.records || [];
+        const confirmations = data.confirmations || [];
+        
+        // 计算漏服次数
+        const missedCount = confirmations.filter(c => c.missed).length;
+        const takenCount = confirmations.filter(c => c.action === 'done').length;
+        const total = confirmations.length;
+        const adherenceRate = total > 0 ? Math.round((takenCount / total) * 100) : 0;
+        
+        // 检查是否有漏服通知
+        const hasMissedAlert = missedCount >= 2;
+        
+        let html = `
+          <div class="children-header">
+            <h1>👨‍👩‍👧 ${parentName}的用药记录</h1>
+            <p>最近 7 天用药情况</p>
+          </div>
+        `;
+        
+        // 漏服通知横幅
+        if (hasMissedAlert) {
+          html += `
+            <div class="notification-banner">
+              <span class="material-icons">warning</span>
+              <div class="notification-banner__content">
+                <div class="notification-banner__title">⚠️ 发现漏服情况</div>
+                <div class="notification-banner__text">
+                  您的${parentName}最近有${missedCount}次未按时服药，请及时关心提醒
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        // 统计卡片
+        html += `
+          <div class="stats-cards">
+            <div class="stat-card ${adherenceRate >= 80 ? 'stat-card--good' : adherenceRate >= 60 ? 'stat-card--warning' : 'stat-card--danger'}">
+              <div class="stat-card__label">用药依从率</div>
+              <div class="stat-card__value">${adherenceRate}%</div>
+              <div class="stat-card__sub">
+                ${adherenceRate >= 80 ? '👍 很好，继续保持' : adherenceRate >= 60 ? '️ 需要关注' : ' 需要立即干预'}
+              </div>
+            </div>
+            
+            <div class="stat-card stat-card--good">
+              <div class="stat-card__label">按时服药</div>
+              <div class="stat-card__value">${takenCount}</div>
+              <div class="stat-card__sub">次</div>
+            </div>
+            
+            <div class="stat-card ${missedCount > 0 ? 'stat-card--danger' : 'stat-card--good'}">
+              <div class="stat-card__label">漏服次数</div>
+              <div class="stat-card__value">${missedCount}</div>
+              <div class="stat-card__sub">次</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-card__label">总提醒次数</div>
+              <div class="stat-card__value">${total}</div>
+              <div class="stat-card__sub">次</div>
+            </div>
+          </div>
+        `;
+        
+        // 依从性图表
+        html += `
+          <div class="section">
+            <div class="section__title">
+              <span class="material-icons">trending_up</span>
+              用药依从性趋势
+            </div>
+            <div class="adherence-chart">
+              ${renderAdherenceChart(adherence)}
+            </div>
+          </div>
+        `;
+        
+        // 最近确认记录
+        html += `
+          <div class="section">
+            <div class="section__title">
+              <span class="material-icons">fact_check</span>
+              最近确认记录
+            </div>
+            <div class="timeline">
+        `;
+        
+        if (confirmations.length === 0) {
+          html += `
+            <div class="empty-state">
+              <span class="material-icons">inbox</span>
+              <p>暂无确认记录</p>
+            </div>
+          `;
+        } else {
+          confirmations.slice().reverse().forEach(conf => {
+            const statusClass = conf.action === 'done' ? 'status--taken' : 'status--missed';
+            const statusText = conf.action === 'done' ? '✅ 已服药' : ' 未服药';
+            
+            html += `
+              <div class="timeline-item ${conf.action === 'done' ? 'timeline-item--taken' : 'timeline-item--missed'}">
+                <div class="timeline-item__time">${formatTime(conf.confirmedAt)}</div>
+                <div class="timeline-item__content">
+                  提醒 ID: ${conf.reminderId}
+                </div>
+                <span class="timeline-item__status ${statusClass}">${statusText}</span>
+              </div>
+            `;
+          });
+        }
+        
+        html += `
+            </div>
+          </div>
+        `;
+        
+        // 用药记录
+        if (records.length > 0) {
+          html += `
+            <div class="section">
+              <div class="section__title">
+                <span class="material-icons">medication</span>
+                用药记录明细
+              </div>
+              <div>
+          `;
+          
+          records.slice(-10).reverse().forEach(record => {
+            const drugName = record.drugName || '未知药物';
+            const time = formatTime(record.time);
+            
+            html += `
+              <div style="padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <span class="drug-tag">${drugName}</span>
+                  <span style="color: #666; font-size: 14px;">${time}</span>
+                </div>
+                <span style="color: #2d6a4f; font-size: 14px;">✅ 已记录</span>
+              </div>
+            `;
+          });
+          
+          html += `
+              </div>
+            </div>
+          `;
+        }
+        
+        app.innerHTML = html;
+      }
+      
+      // 初始化加载
+      (async function init() {
+        const data = await loadParentMedicationRecords();
+        if (data) {
+          renderApp(data);
+        } else {
+          document.getElementById('app').innerHTML = `
+            <div class="empty-state">
+              <span class="material-icons">error_outline</span>
+              <p>加载失败，请刷新重试</p>
+            </div>
+          `;
+        }
+      })();
+    </script>
+  </body>
+</html>

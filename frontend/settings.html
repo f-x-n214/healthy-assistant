@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>银发健康助手 - 设置</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <div class="app" aria-label="银发健康助手设置">
+      <!-- 顶部导航栏 -->
+      <header class="header">
+        <div class="header__left">
+          <button class="header__back" id="backBtn">
+            <span class="material-icons">arrow_back</span>
+          </button>
+          <span class="header__logo">
+            <span class="material-icons">settings</span>
+          </span>
+          <span class="header__title">设置</span>
+        </div>
+        <div class="header__right">
+        </div>
+      </header>
+
+      <main class="content content--settings">
+        <!-- 偏好设置 -->
+        <section class="settings-section">
+          <div class="section-header">
+            <span class="material-icons">tune</span>
+            <span class="section-title">偏好设置</span>
+          </div>
+          
+          <!-- 字体大小设置 -->
+          <div class="setting-item">
+            <div class="setting-item__left">
+              <span class="material-icons">text_fields</span>
+              <span class="setting-item__label">字体大小</span>
+            </div>
+            <div class="setting-item__right">
+              <div class="font-size-options">
+                <button class="font-size-btn" data-size="small" id="fontSmall">小</button>
+                <button class="font-size-btn font-size-btn--active" data-size="medium" id="fontMedium">中</button>
+                <button class="font-size-btn" data-size="large" id="fontLarge">大</button>
+                <button class="font-size-btn" data-size="xlarge" id="fontXLarge">特大</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 语速设置 -->
+          <div class="setting-item">
+            <div class="setting-item__left">
+              <span class="material-icons">volume_up</span>
+              <span class="setting-item__label">语速</span>
+            </div>
+            <div class="setting-item__right">
+              <div class="speech-rate-options">
+                <button class="speech-rate-btn" data-rate="0.6">慢</button>
+                <button class="speech-rate-btn speech-rate-btn--active" data-rate="0.9">中</button>
+                <button class="speech-rate-btn" data-rate="1.2">快</button>
+                <button class="speech-rate-btn" data-rate="1.5">特快</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 通知开关 -->
+          <div class="setting-item">
+            <div class="setting-item__left">
+              <span class="material-icons">notifications</span>
+              <span class="setting-item__label">通知提醒</span>
+            </div>
+            <div class="setting-item__right">
+              <button class="toggle-switch" id="notificationToggle" data-enabled="true">
+                <span class="toggle-track">
+                  <span class="toggle-thumb"></span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 关于我们 -->
+        <section class="settings-section">
+          <div class="section-header">
+            <span class="material-icons">info</span>
+            <span class="section-title">关于我们</span>
+          </div>
+          
+          <div class="setting-item" id="aboutItem">
+            <div class="setting-item__left">
+              <span class="material-icons">help_outline</span>
+              <span class="setting-item__label">关于银发健康助手</span>
+            </div>
+            <div class="setting-item__right">
+              <span class="material-icons">chevron_right</span>
+            </div>
+          </div>
+
+          <div class="setting-item" id="versionItem">
+            <div class="setting-item__left">
+              <span class="material-icons">tag</span>
+              <span class="setting-item__label">版本号</span>
+            </div>
+            <div class="setting-item__right">
+              <span class="version-text">v1.0.0</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 底部信息 -->
+        <div class="settings-footer">
+          <p>银发健康助手 - 关爱老人健康</p>
+        </div>
+      </main>
+    </div>
+
+    <script src="./settings.js"></script>
+  </body>
+</html>

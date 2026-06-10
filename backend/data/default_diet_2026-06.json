@@ -1,0 +1,28 @@
+{
+  "month": "2026-06",
+  "records": [
+    {
+      "id": "diet_20260603_140925_cae8",
+      "foods": [],
+      "meal": "",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-06-03T06:09:24.452Z",
+      "source": "regex",
+      "createdAt": "2026-06-03T14:09:25.011669"
+    },
+    {
+      "id": "diet_20260603_153452_de4c",
+      "foods": [],
+      "meal": "早上",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-06-03T07:34:52.684Z",
+      "source": "regex",
+      "createdAt": "2026-06-03T15:34:52.996465"
+    }
+  ],
+  "statistics": {}
+}

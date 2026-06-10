@@ -1,0 +1,96 @@
+{
+  "month": "2026-04",
+  "records": [
+    {
+      "id": "bp_20260429_171333_5209",
+      "systolic": 145,
+      "diastolic": 92,
+      "unit": "mmHg",
+      "time": "2026-04-29T09:13:32.629Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T17:13:33.191747"
+    },
+    {
+      "id": "bp_20260429_181516_3f79",
+      "systolic": 130,
+      "diastolic": 100,
+      "unit": "mmHg",
+      "time": "2026-04-29T10:15:15.530Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T18:15:16.102544"
+    },
+    {
+      "id": "bp_20260429_182600_9d17",
+      "systolic": 145,
+      "diastolic": 92,
+      "unit": "mmHg",
+      "time": "2026-04-29T10:25:59.579Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T18:26:00.143071"
+    },
+    {
+      "id": "bp_20260429_184154_c204",
+      "systolic": 80,
+      "diastolic": 70,
+      "unit": "mmHg",
+      "time": "2026-04-29T10:41:53.476Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T18:41:54.043101"
+    },
+    {
+      "id": "bp_20260429_185706_db5a",
+      "systolic": 130,
+      "diastolic": 89,
+      "unit": "mmHg",
+      "time": "2026-04-29T10:57:06.367Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T18:57:06.677215"
+    },
+    {
+      "id": "bp_20260429_192402_04f7",
+      "systolic": 130,
+      "diastolic": 89,
+      "unit": "mmHg",
+      "time": "2026-04-29T11:24:02.181Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-29T19:24:02.759253"
+    },
+    {
+      "id": "bp_20260430_095631_f1ec",
+      "systolic": 148,
+      "diastolic": 98,
+      "unit": "mmHg",
+      "time": "2026-04-30T01:56:31.041Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-30T09:56:31.621700"
+    },
+    {
+      "id": "bp_20260430_102931_010d",
+      "systolic": 124,
+      "diastolic": 85,
+      "unit": "mmHg",
+      "time": "2026-04-30T02:29:30.807Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-30T10:29:31.118313"
+    },
+    {
+      "id": "bp_20260430_183618_d356",
+      "systolic": 136,
+      "diastolic": 87,
+      "unit": "mmHg",
+      "time": "2026-04-30T10:36:18.342Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-04-30T18:36:18.660161"
+    }
+  ],
+  "statistics": {}
+}

@@ -1,0 +1,28 @@
+{
+  "userId": "default",
+  "name": "小花",
+  "age": 65,
+  "gender": "男",
+  "phone": "",
+  "chronicDiseases": [
+    "高血压",
+    "糖尿病"
+  ],
+  "allergies": [
+    "鸡蛋"
+  ],
+  "currentMedications": [],
+  "habits": {
+    "dietPreference": "",
+    "exerciseHabit": "",
+    "sleepTime": ""
+  },
+  "family": [],
+  "behaviorStage": "新手期",
+  "trustLevel": "低",
+  "createdAt": "2026-04-29T16:09:51.483957",
+  "updatedAt": "2026-06-09T16:28:29.768280",
+  "weight": 70.1,
+  "heightCm": 170,
+  "height": 170
+}

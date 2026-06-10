@@ -1,0 +1,17 @@
+{
+  "month": "2026-06",
+  "records": [
+    {
+      "id": "exercise_20260609_153014_bbd3",
+      "action": "散步",
+      "duration": null,
+      "durationUnit": "分钟",
+      "intensity": "",
+      "feeling": "",
+      "time": "2026-06-09T07:30:13.511Z",
+      "source": "regex",
+      "createdAt": "2026-06-09T15:30:14.072427"
+    }
+  ],
+  "statistics": {}
+}

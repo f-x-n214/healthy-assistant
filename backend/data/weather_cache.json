@@ -1,0 +1,17 @@
+{
+  "timestamp": 1780999396.685193,
+  "data": {
+    "temp": "30",
+    "feelsLike": "30",
+    "weather": "晴",
+    "windDir": "南风",
+    "windScale": "2",
+    "humidity": "73",
+    "visibility": "14",
+    "uvIndex": "2",
+    "precip": "7",
+    "pressure": "1005",
+    "updateTime": "2026-06-09T18:03:16.685161",
+    "city": "广州"
+  }
+}

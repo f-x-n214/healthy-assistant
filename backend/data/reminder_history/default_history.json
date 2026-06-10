@@ -1,0 +1,357 @@
+{
+  "triggered": [
+    {
+      "reminderId": "remind_20260506_153507_3604",
+      "type": "medication",
+      "drugName": "test_drug",
+      "time": "15:35",
+      "message": "test，该吃test_drug了！您吃药了吗？",
+      "triggeredAt": "2026-05-06T15:35:07.163042"
+    },
+    {
+      "reminderId": "remind_20260507_102154_998b",
+      "type": "temperature",
+      "drugName": "",
+      "time": "10:23",
+      "message": "test，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-07T10:21:56.782674"
+    },
+    {
+      "reminderId": "remind_20260507_102301_48ec",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "10:28",
+      "message": "test，该吃降压药了！您吃药了吗？",
+      "triggeredAt": "2026-05-07T10:26:26.794100"
+    },
+    {
+      "reminderId": "remind_20260510_124007_84f4",
+      "type": "temperature",
+      "drugName": "",
+      "time": "12:45",
+      "message": "test，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-10T12:45:00.070323"
+    },
+    {
+      "reminderId": "remind_20260510_130720_748e",
+      "type": "medication",
+      "drugName": "阿莫西林",
+      "time": "13:10",
+      "message": "test，该吃阿莫西林了！您吃药了吗？",
+      "triggeredAt": "2026-05-10T13:10:16.537710"
+    },
+    {
+      "reminderId": "remind_20260510_130521_786f",
+      "type": "medication",
+      "drugName": "阿莫西林",
+      "time": "13:15",
+      "message": "test，该吃阿莫西林了！您吃药了吗？",
+      "triggeredAt": "2026-05-10T13:15:20.229421"
+    },
+    {
+      "reminderId": "remind_20260430_185515_a9e4",
+      "type": "medication",
+      "drugName": "感冒药",
+      "time": "18:56",
+      "message": "test，该吃感冒药了！您吃药了吗？",
+      "triggeredAt": "2026-05-10T18:56:07.237870"
+    },
+    {
+      "reminderId": "remind_20260510_221314_7b8f",
+      "type": "medication",
+      "drugName": "阿司匹林",
+      "time": "22:15",
+      "message": "张大爷，该吃阿司匹林了！您吃药了吗？",
+      "triggeredAt": "2026-05-10T22:15:01.512505"
+    },
+    {
+      "reminderId": "remind_20260511_122006_94a3",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "14:00",
+      "message": "张大爷，该吃降压药了！您吃药了吗？",
+      "triggeredAt": "2026-05-11T14:00:05.238467"
+    },
+    {
+      "reminderId": "remind_20260511_130318_253f",
+      "type": "medication",
+      "drugName": "阿莫西林",
+      "time": "14:30",
+      "message": "张大爷，该吃阿莫西林了！您吃药了吗？",
+      "triggeredAt": "2026-05-11T14:30:15.242435"
+    },
+    {
+      "reminderId": "remind_20260511_143101_1aa4",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "14:38",
+      "message": "张大爷，该吃降压药了！您吃药了吗？",
+      "triggeredAt": "2026-05-11T14:38:14.049450"
+    },
+    {
+      "reminderId": "remind_20260518_144031_fabe",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "14:45",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-18T14:45:21.243800",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260511_143807_ade7",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "14:50",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-18T14:50:21.242896",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260518_145616_1196",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "14:59",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-18T14:59:21.252035",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260518_142207_c305",
+      "type": "medication",
+      "drugName": "氨氯地平",
+      "time": "15:00",
+      "message": "张三，该吃氨氯地平了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-18T15:00:07.681213",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260527_145309_ba35",
+      "type": "temperature",
+      "drugName": "",
+      "time": "15:03",
+      "message": "张三，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-27T15:03:45.535732",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260527_145421_9e13",
+      "type": "temperature",
+      "drugName": "",
+      "time": "15:04",
+      "message": "张三，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-27T15:04:08.523135",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260510_214043_fb6b",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "22:00",
+      "message": "张三，08:00 服用降压药",
+      "triggeredAt": "2026-05-27T22:00:15.246671",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_085507_1786",
+      "type": "temperature",
+      "drugName": "降压药",
+      "time": "09:00",
+      "message": "张三，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-28T09:00:09.565107",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260528_090501_c50f",
+      "type": "temperature",
+      "drugName": "",
+      "time": "09:10",
+      "message": "张三，该量体温啦！测完可以告诉我结果。",
+      "triggeredAt": "2026-05-28T09:10:11.832226",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260521_103948_491e",
+      "type": "medication",
+      "drugName": "布洛芬",
+      "time": "10:00",
+      "message": "张三，该吃布洛芬了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-28T10:00:05.268475",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_100450_c272",
+      "type": "medication",
+      "drugName": "阿莫西林",
+      "time": "10:10",
+      "message": "张三，该吃阿莫西林了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-28T10:10:20.648497",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_101450_e50e",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "10:19",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-05-28T10:19:06.770499",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_084148_936e",
+      "type": "activity",
+      "drugName": "",
+      "time": "17:00",
+      "message": "张三，傍晚散步时间到了",
+      "triggeredAt": "2026-06-03T17:00:47.238937",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260608_162244_49c1",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "16:30",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-08T16:30:05.626351",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260608_164334_1b06",
+      "type": "medication",
+      "drugName": "每天",
+      "time": "16:50",
+      "message": "张三，该吃每天了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-08T16:50:24.642365",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260608_164409_9e01",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "16:55",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-08T16:55:10.611993",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_084148_936e",
+      "type": "activity",
+      "drugName": "",
+      "time": "17:00",
+      "message": "张三，傍晚散步时间到了",
+      "triggeredAt": "2026-06-08T17:00:05.247046",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260608_164315_de58",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "17:00",
+      "message": "张三，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-08T17:00:05.258561",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260608_162244_49c1",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "16:30",
+      "message": "小花，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-09T16:30:28.537959",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260608_164334_1b06",
+      "type": "medication",
+      "drugName": "每天",
+      "time": "16:50",
+      "message": "小花，该吃每天了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-09T16:50:54.545547",
+      "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_084148_936e",
+      "type": "activity",
+      "drugName": "",
+      "time": "17:00",
+      "message": "小花，傍晚散步时间到了",
+      "triggeredAt": "2026-06-09T17:00:54.529374",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260608_164315_de58",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "17:00",
+      "message": "小花，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-09T17:00:54.538683",
+      "needConfirm": true
+    }
+  ],
+  "confirmed": [
+    {
+      "reminderId": "remind_20260518_142207_c305",
+      "action": "done",
+      "confirmedAt": "2026-05-18T15:00:18.225660",
+      "recordSaved": true
+    },
+    {
+      "reminderId": "remind_20260510_214043_fb6b",
+      "action": "done",
+      "confirmedAt": "2026-05-27T22:00:29.689336",
+      "recordSaved": true
+    },
+    {
+      "reminderId": "remind_20260521_103948_491e",
+      "action": "done",
+      "confirmedAt": "2026-05-28T10:00:47.335927",
+      "recordSaved": true
+    },
+    {
+      "reminderId": "remind_20260528_100450_c272",
+      "action": "done",
+      "confirmedAt": "2026-05-28T10:10:41.464886",
+      "recordSaved": true
+    },
+    {
+      "reminderId": "remind_20260608_162244_49c1",
+      "action": "skipped",
+      "confirmedAt": "2026-06-08T16:30:09.616150",
+      "skipped": true,
+      "missed": true
+    },
+    {
+      "reminderId": "remind_20260608_164334_1b06",
+      "action": "skipped",
+      "confirmedAt": "2026-06-08T16:50:44.035987",
+      "skipped": true,
+      "missed": true
+    },
+    {
+      "reminderId": "remind_20260608_164409_9e01",
+      "action": "skipped",
+      "confirmedAt": "2026-06-08T16:57:31.571231",
+      "skipped": true,
+      "missed": true
+    },
+    {
+      "reminderId": "remind_20260608_164315_de58",
+      "action": "skipped",
+      "confirmedAt": "2026-06-08T17:00:25.835362",
+      "skipped": true,
+      "missed": true
+    },
+    {
+      "reminderId": "remind_20260608_162244_49c1",
+      "action": "done",
+      "confirmedAt": "2026-06-09T16:31:10.983794",
+      "recordSaved": true
+    },
+    {
+      "reminderId": "remind_20260608_164315_de58",
+      "action": "skipped",
+      "confirmedAt": "2026-06-09T17:29:06.818755",
+      "skipped": true,
+      "missed": true
+    }
+  ]
+}

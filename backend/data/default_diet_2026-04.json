@@ -1,0 +1,61 @@
+{
+  "month": "2026-04",
+  "records": [
+    {
+      "id": "diet_20260430_084823_462c",
+      "foods": [],
+      "meal": "早餐",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-04-30T00:48:23.257Z",
+      "source": "regex",
+      "createdAt": "2026-04-30T08:48:23.832027"
+    },
+    {
+      "id": "diet_20260430_092030_6adb",
+      "foods": [],
+      "meal": "早餐",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-04-30T01:20:30.561Z",
+      "source": "regex",
+      "createdAt": "2026-04-30T09:20:30.878859"
+    },
+    {
+      "id": "diet_20260430_092118_2c3b",
+      "foods": [],
+      "meal": "早餐",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-04-30T01:21:18.647Z",
+      "source": "regex",
+      "createdAt": "2026-04-30T09:21:18.964189"
+    },
+    {
+      "id": "diet_20260430_092138_b838",
+      "foods": [],
+      "meal": "早餐",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-04-30T01:21:38.161Z",
+      "source": "regex",
+      "createdAt": "2026-04-30T09:21:38.480346"
+    },
+    {
+      "id": "diet_20260430_101521_4adc",
+      "foods": [],
+      "meal": "晚上",
+      "amount": "",
+      "calories": null,
+      "note": "",
+      "time": "2026-04-30T02:15:20.681Z",
+      "source": "regex",
+      "createdAt": "2026-04-30T10:15:21.001485"
+    }
+  ],
+  "statistics": {}
+}

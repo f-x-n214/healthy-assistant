@@ -1,0 +1,141 @@
+{
+  "month": "2026-05",
+  "records": [
+    {
+      "id": "bs_20260510_115651_6417",
+      "value": null,
+      "unit": "mmol/L",
+      "type": "",
+      "time": "2026-05-10T03:56:51.128Z",
+      "source": "regex",
+      "createdAt": "2026-05-10T11:56:51.437150"
+    },
+    {
+      "id": "bs_20260510_141833_8ec4",
+      "value": 12,
+      "unit": "mmol/L",
+      "type": "",
+      "time": "2026-05-10T06:18:32.979Z",
+      "source": "llm",
+      "createdAt": "2026-05-10T14:18:33.559915"
+    },
+    {
+      "id": "bs_20260510_141917_14e1",
+      "value": 12,
+      "unit": "mmol/L",
+      "type": "",
+      "time": "2026-05-10T06:19:17.053Z",
+      "source": "llm",
+      "createdAt": "2026-05-10T14:19:17.369698"
+    },
+    {
+      "id": "bs_20260510_182141_0c15",
+      "value": 11.6,
+      "unit": "mmol/L",
+      "type": "",
+      "time": "2026-05-10T10:21:40.461Z",
+      "source": "llm",
+      "createdAt": "2026-05-10T18:21:41.039449"
+    },
+    {
+      "id": "bs_20260510_195415_9d9a",
+      "value": 6.2,
+      "unit": "mmol/L",
+      "type": "空腹",
+      "time": "2026-05-10T11:54:15.681Z",
+      "source": "llm",
+      "createdAt": "2026-05-10T19:54:15.996996"
+    },
+    {
+      "id": "bs_20260511_121943_a305",
+      "value": 6.5,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-11T04:19:43.085Z",
+      "source": "llm",
+      "createdAt": "2026-05-11T12:19:43.396317"
+    },
+    {
+      "id": "bs_20260511_125122_0e5c",
+      "value": 6.4,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-11T04:51:22.119Z",
+      "source": "llm",
+      "createdAt": "2026-05-11T12:51:22.429460"
+    },
+    {
+      "id": "bs_20260511_130229_25fe",
+      "value": 6.3,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-11T05:02:29.455Z",
+      "source": "llm",
+      "createdAt": "2026-05-11T13:02:29.773600"
+    },
+    {
+      "id": "bs_20260511_143742_b483",
+      "value": 6.5,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-11T06:37:42.603Z",
+      "source": "llm",
+      "createdAt": "2026-05-11T14:37:42.922417"
+    },
+    {
+      "id": "bs_20260527_141420_bcc9",
+      "value": 12.6,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-27T06:14:20.325Z",
+      "source": "llm",
+      "createdAt": "2026-05-27T14:14:20.639334"
+    },
+    {
+      "id": "bs_20260527_141525_c0ad",
+      "value": 12.3,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-27T06:15:25.675Z",
+      "source": "llm",
+      "createdAt": "2026-05-27T14:15:25.988074"
+    },
+    {
+      "id": "bs_20260527_145400_12cf",
+      "value": 6.5,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-27T06:54:00.059Z",
+      "source": "llm",
+      "createdAt": "2026-05-27T14:54:00.372031"
+    },
+    {
+      "id": "bs_20260528_085424_c149",
+      "value": 13.6,
+      "unit": "mmol/L",
+      "type": "post",
+      "time": "2026-05-28T00:54:24.261Z",
+      "source": "llm",
+      "createdAt": "2026-05-28T08:54:24.575314"
+    },
+    {
+      "id": "bs_20260528_102449_6194",
+      "value": 6.5,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-05-28T02:24:49.334Z",
+      "source": "llm",
+      "createdAt": "2026-05-28T10:24:49.896684"
+    },
+    {
+      "id": "bs_20260528_103455_815a",
+      "value": 10.9,
+      "unit": "mmol/L",
+      "type": "post",
+      "time": "2026-05-28T02:34:54.786Z",
+      "source": "llm",
+      "createdAt": "2026-05-28T10:34:55.098420"
+    }
+  ],
+  "statistics": {}
+}

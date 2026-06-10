@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>银发健康助手 - 子女端</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <main class="main">
+      <!-- 顶部导航栏 -->
+      <section class="top-bar">
+        <div class="top-bar__brand">
+          <span class="top-bar__icon">👨‍👩‍👧</span>
+          <span class="top-bar__title">子女端</span>
+        </div>
+        <div class="top-bar__actions">
+          <button class="top-bar__btn" onclick="window.location.href='index.html'">
+            <span class="material-icons">home</span>
+            <span>父母端</span>
+          </button>
+          <button class="top-bar__btn" onclick="showBindModal()">
+            <span class="material-icons">person_add</span>
+            <span>绑定父母</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 页面标题 -->
+      <section class="page-header">
+        <div class="page-header__title">父母健康报告</div>
+        <div class="page-header__subtitle" id="parentSubtitle">请先绑定父母</div>
+      </section>
+
+      <!-- 告警横幅 -->
+      <section class="records-section">
+        <div id="urgentBanner"></div>
+      </section>
+
+      <!-- 关键指标卡片 - 与records.html一致 -->
+      <section class="records-section">
+        <div class="section-header">
+          <span class="material-icons">favorite</span>
+          <span class="section-title">关键健康指标</span>
+        </div>
+
+        <div class="key-stats">
+          <div class="key-stat-card key-stat-card--bp">
+            <div class="key-stat-card__icon">
+              <span class="material-icons">monitor_heart</span>
+            </div>
+            <div class="key-stat-card__label">最近血压</div>
+            <div class="key-stat-card__value" id="latestBp">--/--</div>
+            <div class="key-stat-card__unit">mmHg</div>
+            <div class="key-stat-card__status" id="bpStatus">暂无数据</div>
+          </div>
+
+          <div class="key-stat-card key-stat-card--bs">
+            <div class="key-stat-card__icon">
+              <span class="material-icons">bloodtype</span>
+            </div>
+            <div class="key-stat-card__label">最近血糖</div>
+            <div class="key-stat-card__value" id="latestBs">--</div>
+            <div class="key-stat-card__unit">mmol/L</div>
+            <div class="key-stat-card__status" id="bsStatus">暂无数据</div>
+          </div>
+
+          <div class="key-stat-card key-stat-card--weight">
+            <div class="key-stat-card__icon">
+              <span class="material-icons">scale</span>
+            </div>
+            <div class="key-stat-card__label">最近体重</div>
+            <div class="key-stat-card__value" id="latestWeight">--</div>
+            <div class="key-stat-card__unit">kg</div>
+            <div class="key-stat-card__status" id="weightStatus">暂无数据</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 标签切换 - 与records.html一致 -->
+      <div class="records-tabs">
+        <button class="records-tab records-tab--active" data-tab="bp">
+          <span class="material-icons">monitor_heart</span>
+          <span>血压</span>
+        </button>
+        <button class="records-tab" data-tab="bs">
+          <span class="material-icons">bloodtype</span>
+          <span>血糖</span>
+        </button>
+        <button class="records-tab" data-tab="weight">
+          <span class="material-icons">scale</span>
+          <span>体重</span>
+        </button>
+        <button class="records-tab" data-tab="medication">
+          <span class="material-icons">pill</span>
+          <span>用药</span>
+        </button>
+      </div>
+
+      <!-- 图表区域 -->
+      <section class="chart-section" id="chartSection">
+        <div class="chart-range-tabs">
+          <button class="chart-range-tab chart-range-tab--active" data-days="7">近7天</button>
+          <button class="chart-range-tab" data-days="30">近30天</button>
+        </div>
+        <div class="chart-container">
+          <canvas id="healthChart"></canvas>
+        </div>
+      </section>
+
+      <!-- 记录列表 -->
+      <section class="records-list-section">
+        <div class="records-list" id="recordsList">
+          <div class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在加载记录...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 告警历史 -->
+      <section class="records-section" id="alertsSection">
+        <div class="section-header">
+          <span class="material-icons">notifications_active</span>
+          <span class="section-title">告警历史</span>
+          <button class="section-header__more" id="viewAllAlerts" style="display:none;" onclick="viewAllAlerts()">
+            <span>查看全部</span>
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+        <div class="alerts-list" id="alertsList"></div>
+      </section>
+
+      <!-- 健康建议 -->
+      <section class="records-section">
+        <div class="section-header">
+          <span class="material-icons">lightbulb</span>
+          <span class="section-title">健康建议</span>
+        </div>
+        <div class="advice-list" id="adviceList"></div>
+      </section>
+
+      <!-- 已绑定父母选择器 -->
+      <section class="records-section" id="parentSelectorSection" style="display:none;">
+        <div class="section-header">
+          <span class="material-icons">people</span>
+          <span class="section-title">已绑定的父母</span>
+        </div>
+        <div class="parent-list" id="parentList"></div>
+      </section>
+
+    </main>
+
+    <!-- 绑定弹窗 -->
+    <div class="emergency-modal" id="bindModal" style="display: none;">
+      <div class="emergency-modal__overlay" onclick="hideBindModal()"></div>
+      <div class="emergency-modal__content">
+        <div class="emergency-modal__header" style="background: linear-gradient(135deg, #66BB6A 0%, #43A047 100%);">
+          <span class="material-icons emergency-modal__icon">link</span>
+          <span class="emergency-modal__title">绑定父母账号</span>
+        </div>
+        <div class="emergency-modal__body" style="flex-direction: column; gap: 16px;">
+          <div style="width: 100%;">
+            <label style="display: block; color: var(--text-secondary); font-size: var(--font-base); margin-bottom: 8px;">邀请码</label>
+            <input id="inviteCodeInput" type="text" placeholder="请输入父母提供的邀请码" style="width: 100%; padding: 16px; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: var(--font-lg); background: var(--secondary-bg); color: var(--text-primary);" />
+          </div>
+          <button class="emergency-option-btn" onclick="submitBind()" style="width: 100%;">
+            <span class="material-icons">check_circle</span>
+            <span>确认绑定</span>
+          </button>
+        </div>
+        <button class="emergency-modal__close" onclick="hideBindModal()">
+          取消
+        </button>
+      </div>
+    </div>
+
+    <script type="module" src="./child.js"></script>
+  </body>
+</html>

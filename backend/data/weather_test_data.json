@@ -1,0 +1,180 @@
+{
+  "test_cases": [
+    {
+      "id": "normal_case_1",
+      "name": "正常天气-晴天",
+      "description": "温度适宜的晴天，无异常",
+      "data": {
+        "temp": "28",
+        "feelsLike": "30",
+        "weather": "晴",
+        "windDir": "南风",
+        "windScale": "2",
+        "humidity": "65",
+        "visibility": "10",
+        "uvIndex": "6",
+        "precip": "0",
+        "pressure": "1015",
+        "updateTime": "2026-05-27T10:30:00",
+        "city": "广州"
+      },
+      "expected_alerts": [],
+      "expected_advisory": ["天气适宜，建议进行适量户外活动如散步、太极"]
+    },
+    {
+      "id": "normal_case_2",
+      "name": "正常天气-多云",
+      "description": "多云天气，温度适中",
+      "data": {
+        "temp": "25",
+        "feelsLike": "26",
+        "weather": "多云",
+        "windDir": "东风",
+        "windScale": "3",
+        "humidity": "70",
+        "visibility": "8",
+        "uvIndex": "4",
+        "precip": "5",
+        "pressure": "1018",
+        "updateTime": "2026-05-27T14:00:00",
+        "city": "北京"
+      },
+      "expected_alerts": [],
+      "expected_advisory": ["天气舒适，适合外出活动"]
+    },
+    {
+      "id": "abnormal_case_1",
+      "name": "异常天气-高温",
+      "description": "高温预警场景",
+      "data": {
+        "temp": "38",
+        "feelsLike": "42",
+        "weather": "晴",
+        "windDir": "西南风",
+        "windScale": "2",
+        "humidity": "80",
+        "visibility": "6",
+        "uvIndex": "10",
+        "precip": "0",
+        "pressure": "1008",
+        "updateTime": "2026-05-27T12:00:00",
+        "city": "广州"
+      },
+      "expected_alerts": [
+        {
+          "type": "weather_high_temp",
+          "level": "danger",
+          "message": "高温红色预警！当前温度38°C，请立即停止户外活动，保持室内通风降温"
+        },
+        {
+          "type": "weather_uv",
+          "level": "warning",
+          "message": "紫外线强！UV指数10，外出请做好防晒措施"
+        }
+      ],
+      "expected_advisory": [
+        "🔥 高温预警：当前温度38°C，请注意防暑降温，避免中午外出",
+        "💧 湿度较高：当前湿度80%，请注意防潮",
+        "☀️ 晴天紫外线强（UV指数10），外出请做好防晒",
+        "🥵 闷热天气建议减少户外活动时间"
+      ]
+    },
+    {
+      "id": "abnormal_case_2",
+      "name": "异常天气-暴雨",
+      "description": "暴雨预警场景",
+      "data": {
+        "temp": "22",
+        "feelsLike": "24",
+        "weather": "暴雨",
+        "windDir": "北风",
+        "windScale": "5",
+        "humidity": "95",
+        "visibility": "2",
+        "uvIndex": "0",
+        "precip": "80",
+        "pressure": "1005",
+        "updateTime": "2026-05-27T08:00:00",
+        "city": "上海"
+      },
+      "expected_alerts": [
+        {
+          "type": "weather_heavy_rain",
+          "level": "danger",
+          "message": "暴雨预警！暴雨，请避免外出，注意防涝"
+        },
+        {
+          "type": "weather_strong_wind",
+          "level": "warning",
+          "message": "大风预警！当前风力5级，请避免外出"
+        }
+      ],
+      "expected_advisory": [
+        "💧 湿度较高：当前湿度95%，请注意防潮",
+        "🌧️ 暴雨：外出请携带雨具，地面湿滑注意安全",
+        "💨 风力较大（5级），请注意防风"
+      ]
+    },
+    {
+      "id": "boundary_case_1",
+      "name": "边界天气-低温",
+      "description": "接近低温阈值的天气",
+      "data": {
+        "temp": "5",
+        "feelsLike": "2",
+        "weather": "阴",
+        "windDir": "西北风",
+        "windScale": "4",
+        "humidity": "60",
+        "visibility": "15",
+        "uvIndex": "1",
+        "precip": "0",
+        "pressure": "1025",
+        "updateTime": "2026-05-27T06:00:00",
+        "city": "北京"
+      },
+      "expected_alerts": [
+        {
+          "type": "weather_low_temp",
+          "level": "warning",
+          "message": "低温预警！当前温度5°C，请务必注意保暖"
+        }
+      ],
+      "expected_advisory": [
+        "❄️ 天气寒冷：当前温度5°C，请注意保暖",
+        "💨 风力较大（4级），请注意防风"
+      ]
+    },
+    {
+      "id": "boundary_case_2",
+      "name": "边界天气-干燥",
+      "description": "低湿度干燥天气",
+      "data": {
+        "temp": "28",
+        "feelsLike": "29",
+        "weather": "晴",
+        "windDir": "北风",
+        "windScale": "3",
+        "humidity": "25",
+        "visibility": "20",
+        "uvIndex": "7",
+        "precip": "0",
+        "pressure": "1020",
+        "updateTime": "2026-05-27T15:00:00",
+        "city": "杭州"
+      },
+      "expected_alerts": [
+        {
+          "type": "weather_uv",
+          "level": "warning",
+          "message": "紫外线强！UV指数7，外出请做好防晒措施"
+        }
+      ],
+      "expected_advisory": [
+        "🌞 天气炎热：当前温度28°C，外出请做好防晒",
+        "🌬️ 空气干燥：当前湿度25%，建议多喝水",
+        "☀️ 晴天紫外线强（UV指数7），外出请做好防晒"
+      ]
+    }
+  ]
+}

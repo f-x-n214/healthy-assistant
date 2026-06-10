@@ -1,0 +1,46 @@
+{
+  "month": "2026-06",
+  "records": [
+    {
+      "id": "bp_20260603_141034_8e72",
+      "systolic": 136,
+      "diastolic": 95,
+      "unit": "mmHg",
+      "time": "2026-06-03T06:10:33.600Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-06-03T14:10:34.121759"
+    },
+    {
+      "id": "bp_20260603_153551_c89a",
+      "systolic": 132,
+      "diastolic": 87,
+      "unit": "mmHg",
+      "time": "2026-06-03T07:35:51.014Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-06-03T15:35:51.577372"
+    },
+    {
+      "id": "bp_20260608_163118_f14f",
+      "systolic": 128,
+      "diastolic": 78,
+      "unit": "mmHg",
+      "time": "2026-06-08T08:31:17.913Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-06-08T16:31:18.475021"
+    },
+    {
+      "id": "bp_20260609_154446_f529",
+      "systolic": 130,
+      "diastolic": 89,
+      "unit": "mmHg",
+      "time": "2026-06-09T07:44:46.207Z",
+      "measurementContext": "",
+      "source": "regex",
+      "createdAt": "2026-06-09T15:44:46.530380"
+    }
+  ],
+  "statistics": {}
+}

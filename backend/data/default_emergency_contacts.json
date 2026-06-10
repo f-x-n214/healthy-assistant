@@ -1,0 +1,12 @@
+{
+  "contacts": [
+    {
+      "id": "contact_20260608_144309_d977",
+      "name": "张小明",
+      "phone": "13812345678",
+      "relationship": "son",
+      "isPrimary": true,
+      "createdAt": "2026-06-08T14:43:09.384938"
+    }
+  ]
+}

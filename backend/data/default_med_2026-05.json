@@ -1,0 +1,84 @@
+{
+  "month": "2026-05",
+  "records": [
+    {
+      "id": "med_20260507_091227_46d8",
+      "drugName": "降压药",
+      "dose": {
+        "amount": 1,
+        "unit": "粒"
+      },
+      "time": "2026-05-07T01:12:26.589Z",
+      "person": "self",
+      "notes": "",
+      "source": "regex",
+      "createdAt": "2026-05-07T09:12:27.166019"
+    },
+    {
+      "id": "med_20260518_144648_f038",
+      "drugName": "",
+      "dose": "1粒",
+      "time": "2026-05-18T06:46:48.443Z",
+      "person": "self",
+      "notes": "",
+      "source": "llm",
+      "createdAt": "2026-05-18T14:46:48.761480"
+    },
+    {
+      "id": "med_20260518_150018_96f3",
+      "drugName": "氨氯地平",
+      "dose": {
+        "amount": 1,
+        "unit": "次"
+      },
+      "source": "reminder",
+      "createdAt": "2026-05-18T15:00:18.226759",
+      "time": "2026-05-18T15:00:18.226764"
+    },
+    {
+      "id": "med_20260527_220029_4d3f",
+      "drugName": "降压药",
+      "dose": {
+        "amount": 1,
+        "unit": "次"
+      },
+      "source": "reminder",
+      "createdAt": "2026-05-27T22:00:29.691468",
+      "time": "2026-05-27T22:00:29.691478"
+    },
+    {
+      "id": "med_20260528_100046_ef53",
+      "drugName": "布洛芬",
+      "dose": {
+        "amount": 1,
+        "unit": "次"
+      },
+      "source": "reminder",
+      "createdAt": "2026-05-28T10:00:46.269492",
+      "time": "2026-05-28T10:00:46.269505"
+    },
+    {
+      "id": "med_20260528_100047_118c",
+      "drugName": "布洛芬",
+      "dose": {
+        "amount": 1,
+        "unit": "次"
+      },
+      "source": "reminder",
+      "createdAt": "2026-05-28T10:00:47.402580",
+      "time": "2026-05-28T10:00:47.402592"
+    },
+    {
+      "id": "med_20260528_101041_04a4",
+      "drugName": "阿莫西林",
+      "dose": {
+        "amount": 1,
+        "unit": "次"
+      },
+      "source": "reminder",
+      "createdAt": "2026-05-28T10:10:41.470564",
+      "time": "2026-05-28T10:10:41.470573"
+    }
+  ],
+  "statistics": {}
+}

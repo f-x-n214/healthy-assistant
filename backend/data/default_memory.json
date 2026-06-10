@@ -1,0 +1,20 @@
+{
+  "milestones": [
+    {
+      "type": "first_record",
+      "name": "初次记录",
+      "message": "恭喜您完成第一次健康记录！良好的开始是成功的一半。",
+      "badge": "first_step",
+      "date": "2026-04-30",
+      "createdAt": "2026-04-30T02:28:42.496Z"
+    }
+  ],
+  "importantDecisions": [],
+  "deepMotivation": {
+    "healthGoal": "",
+    "familyResponsibility": ""
+  },
+  "lessons": [],
+  "createdAt": "2026-04-29T17:00:38.898239",
+  "updatedAt": "2026-04-30T10:28:42.806046"
+}

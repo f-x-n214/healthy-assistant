@@ -1,0 +1,72 @@
+{
+  "2026-05-27": {
+    "temp": "32",
+    "feelsLike": "30",
+    "weather": "多云",
+    "windDir": "南风",
+    "windScale": "4",
+    "humidity": "72",
+    "visibility": "5",
+    "uvIndex": "2",
+    "precip": "4",
+    "pressure": "1016",
+    "updateTime": "2026-05-27T21:50:22.438365",
+    "city": "广州"
+  },
+  "2026-05-28": {
+    "temp": "30",
+    "feelsLike": "31",
+    "weather": "晴",
+    "windDir": "东风",
+    "windScale": "2",
+    "humidity": "79",
+    "visibility": "5",
+    "uvIndex": "1",
+    "precip": "9",
+    "pressure": "1005",
+    "updateTime": "2026-05-28T10:23:47.545375",
+    "city": "广州"
+  },
+  "2026-06-03": {
+    "temp": "34",
+    "feelsLike": "34",
+    "weather": "大雨",
+    "windDir": "东风",
+    "windScale": "3",
+    "humidity": "65",
+    "visibility": "7",
+    "uvIndex": "10",
+    "precip": "9",
+    "pressure": "1013",
+    "updateTime": "2026-06-03T16:25:49.645345",
+    "city": "广州"
+  },
+  "2026-06-08": {
+    "temp": "28",
+    "feelsLike": "28",
+    "weather": "多云",
+    "windDir": "西风",
+    "windScale": "4",
+    "humidity": "79",
+    "visibility": "7",
+    "uvIndex": "3",
+    "precip": "13",
+    "pressure": "1011",
+    "updateTime": "2026-06-08T18:01:08.766191",
+    "city": "广州"
+  },
+  "2026-06-09": {
+    "temp": "30",
+    "feelsLike": "30",
+    "weather": "晴",
+    "windDir": "南风",
+    "windScale": "2",
+    "humidity": "73",
+    "visibility": "14",
+    "uvIndex": "2",
+    "precip": "7",
+    "pressure": "1005",
+    "updateTime": "2026-06-09T18:03:16.685161",
+    "city": "广州"
+  }
+}

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>银发健康助手 - 我的</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <!-- 页面标题 -->
+    <section class="page-header">
+      <div class="page-header__title">我的</div>
+      <div class="page-header__subtitle">个人中心</div>
+    </section>
+
+    <!-- 主要内容区域 -->
+    <main class="main">
+
+
+      <!-- 紧急联系人 -->
+      <section class="settings-section">
+        <div class="section-header">
+          <span class="material-icons">phone</span>
+          <span class="section-title">紧急联系人</span>
+        </div>
+        
+        <div class="setting-item" onclick="editField('emergencyContactName', '紧急联系人姓名')">
+          <div class="setting-item__left">
+            <span class="material-icons">person</span>
+            <span class="setting-item__label">紧急联系人</span>
+          </div>
+          <div class="setting-item__right">
+            <span id="emergencyContactName">儿子</span>
+            <span class="material-icons">edit</span>
+          </div>
+        </div>
+
+        <div class="setting-item" onclick="editField('emergencyContactPhone', '联系电话')">
+          <div class="setting-item__left">
+            <span class="material-icons">phone</span>
+            <span class="setting-item__label">联系电话</span>
+          </div>
+          <div class="setting-item__right">
+            <span id="emergencyContactPhone">13800138000</span>
+            <span class="material-icons">edit</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 快捷设置 -->
+      <section class="settings-section">
+        <div class="section-header">
+          <span class="material-icons">tune</span>
+          <span class="section-title">快捷设置</span>
+        </div>
+        
+        <div class="setting-item" onclick="navigateTo('settings')">
+          <div class="setting-item__left">
+            <span class="material-icons">settings</span>
+            <span class="setting-item__label">偏好设置</span>
+          </div>
+          <div class="setting-item__right">
+            <span class="material-icons">chevron_right</span>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-item__left">
+            <span class="material-icons">shield</span>
+            <span class="setting-item__label">安全中心</span>
+          </div>
+          <div class="setting-item__right">
+            <span class="material-icons">chevron_right</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 帮助与支持 -->
+      <section class="settings-section">
+        <div class="section-header">
+          <span class="material-icons">help</span>
+          <span class="section-title">帮助与支持</span>
+        </div>
+        
+        <div class="setting-item" id="helpItem">
+          <div class="setting-item__left">
+            <span class="material-icons">help_outline</span>
+            <span class="setting-item__label">使用帮助</span>
+          </div>
+          <div class="setting-item__right">
+            <span class="material-icons">chevron_right</span>
+          </div>
+        </div>
+
+        <div class="setting-item" id="feedbackItem">
+          <div class="setting-item__left">
+            <span class="material-icons">message</span>
+            <span class="setting-item__label">意见反馈</span>
+          </div>
+          <div class="setting-item__right">
+            <span class="material-icons">chevron_right</span>
+          </div>
+        </div>
+
+        <div class="setting-item" id="aboutItem">
+          <div class="setting-item__left">
+            <span class="material-icons">info</span>
+            <span class="setting-item__label">关于我们</span>
+          </div>
+          <div class="setting-item__right">
+            <span class="material-icons">chevron_right</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 版本信息 -->
+      <div class="settings-footer">
+        <p>银发健康助手 v1.0.0</p>
+      </div>
+    </main>
+
+    <!-- 紧急求助悬浮按钮 -->
+    <button class="emergency-btn" id="emergencyBtn" onclick="showEmergencyModal()">
+      <span class="material-icons emergency-btn__icon">emergency</span>
+      <span class="emergency-btn__text">紧急求助</span>
+    </button>
+
+    <!-- 紧急求助弹窗 -->
+    <div class="emergency-modal" id="emergencyModal">
+      <div class="emergency-modal__overlay" onclick="hideEmergencyModal()"></div>
+      <div class="emergency-modal__content">
+        <div class="emergency-modal__header">
+          <span class="material-icons emergency-modal__icon">warning</span>
+          <span class="emergency-modal__title">紧急求助</span>
+        </div>
+        <div class="emergency-modal__body">
+          <button class="emergency-option-btn" onclick="callEmergencyContact()">
+            <span class="material-icons">phone</span>
+            <span>拨打紧急联系人</span>
+          </button>
+
+        </div>
+        <button class="emergency-modal__close" onclick="hideEmergencyModal()">
+          取消
+        </button>
+      </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav class="bottom-nav">
+      <button class="bottom-nav__item" onclick="navigateTo('home')">
+        <span class="material-icons">home</span>
+        <span class="bottom-nav__label">首页</span>
+      </button>
+      <button class="bottom-nav__item" onclick="navigateTo('records')">
+        <span class="material-icons">folder</span>
+        <span class="bottom-nav__label">健康档案</span>
+      </button>
+      <button class="bottom-nav__item" onclick="navigateTo('messages')">
+        <span class="material-icons">message</span>
+        <span class="bottom-nav__label">消息提醒</span>
+      </button>
+      <button class="bottom-nav__item bottom-nav__item--active" onclick="navigateTo('profile')">
+        <span class="material-icons">person</span>
+        <span class="bottom-nav__label">我的</span>
+      </button>
+    </nav>
+
+    <script type="module" src="./profile.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "month": "2026-04",
+  "records": [
+    {
+      "id": "med_20260430_102841_d922",
+      "drugName": "降压药",
+      "dose": {
+        "amount": 1,
+        "unit": "粒"
+      },
+      "time": "2026-04-30T02:28:40.953Z",
+      "person": "self",
+      "notes": "",
+      "source": "regex",
+      "createdAt": "2026-04-30T10:28:41.267062"
+    }
+  ],
+  "statistics": {}
+}

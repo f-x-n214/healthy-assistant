@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>银发健康助手 - 告警历史</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+    <main class="main">
+      <!-- 页面标题 -->
+      <section class="page-header">
+        <button class="page-header__back" onclick="window.location.href='child.html'">
+          <span class="material-icons">arrow_back</span>
+          <span>返回</span>
+        </button>
+        <div class="page-header__title">告警历史</div>
+        <div class="page-header__subtitle" id="alertsCount">共 0 条</div>
+      </section>
+
+      <!-- 筛选标签 -->
+      <div class="alerts-filter-tabs">
+        <button class="alerts-filter-tab alerts-filter-tab--active" data-filter="all">全部</button>
+        <button class="alerts-filter-tab alerts-filter-tab--urgent" data-filter="urgent">🚨 紧急</button>
+        <button class="alerts-filter-tab alerts-filter-tab--warn" data-filter="warn">⚠️ 警告</button>
+        <button class="alerts-filter-tab alerts-filter-tab--info" data-filter="info">ℹ️ 提示</button>
+      </div>
+
+      <!-- 告警列表 -->
+      <section class="alerts-full-list" id="alertsList">
+        <!-- 动态加载 -->
+      </section>
+    </main>
+
+    <script type="module">
+      const API_BASE = 'http://localhost:5001/api';
+      const CURRENT_CHILD_ID = 'default_child';
+      
+      // 从URL参数获取parent_id
+      function getParentId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('parent_id') || 'default';
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        loadAlerts();
+
+        document.querySelectorAll('.alerts-filter-tab').forEach(btn => {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.alerts-filter-tab').forEach(b => b.classList.remove('alerts-filter-tab--active'));
+            this.classList.add('alerts-filter-tab--active');
+            loadAlerts(this.dataset.filter);
+          });
+        });
+      });
+
+      async function loadAlerts(filter = 'all') {
+        const alertsList = document.getElementById('alertsList');
+        const alertsCount = document.getElementById('alertsCount');
+        
+        try {
+          const parentId = getParentId();
+          const res = await fetch(`${API_BASE}/family/parent/${parentId}/alerts?child_id=${CURRENT_CHILD_ID}`);
+          const data = res.ok ? await res.json() : { ok: false };
+
+          if (!data.ok || !data.data || data.data.length === 0) {
+            alertsList.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:var(--font-xl);">✅ 暂无告警记录</div>';
+            alertsCount.textContent = '共 0 条';
+            return;
+          }
+
+          let filteredAlerts = data.data;
+          if (filter !== 'all') {
+            filteredAlerts = data.data.filter(alert => {
+              if (filter === 'urgent') return alert.severity === 'URGENT' || alert.severity === 'BLOCK';
+              if (filter === 'warn') return alert.severity === 'WARN';
+              if (filter === 'info') return alert.severity === 'INFO';
+              return true;
+            });
+          }
+
+          const sortedAlerts = [...filteredAlerts].sort((a, b) => (b.time || 0) - (a.time || 0));
+          alertsCount.textContent = `共 ${sortedAlerts.length} 条`;
+
+          let html = '';
+          sortedAlerts.forEach(alert => {
+            const time = formatTime(alert.time);
+            const level = getAlertLevel(alert.severity);
+            const severityText = getSeverityText(alert.severity);
+            const msg = (alert.message || '').replace(/null/g, '未知');
+
+            html += `
+              <div class="alert-full-card alert-full-card--${level}">
+                <div class="alert-full-card__header">
+                  <span class="alert-full-card__icon">${getAlertIcon(alert.severity)}</span>
+                  <span class="alert-full-card__title">${alert.title || '告警'}</span>
+                  <span class="alert-full-card__badge alert-full-card__badge--${level}">${severityText}</span>
+                </div>
+                <div class="alert-full-card__message">${msg}</div>
+                <div class="alert-full-card__footer">
+                  <span class="alert-full-card__time">${time}</span>
+                  <span class="alert-full-card__source">来源: ${alert.source || '系统检测'}</span>
+                </div>
+              </div>
+            `;
+          });
+
+          alertsList.innerHTML = html || '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:var(--font-xl);">该类别暂无告警</div>';
+        } catch (e) {
+          console.error('加载告警失败:', e);
+          alertsList.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:var(--font-xl);">加载告警失败，请稍后重试</div>';
+          alertsCount.textContent = '共 0 条';
+        }
+      }
+
+      function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${month}月${day}日 ${hours}:${minutes}`;
+      }
+
+      function getAlertIcon(severity) {
+        switch (severity) {
+          case 'URGENT': return '🚨';
+          case 'BLOCK': return '⛔';
+          case 'WARN': return '⚠️';
+          default: return 'ℹ️';
+        }
+      }
+
+      function getAlertLevel(severity) {
+        if (severity === 'URGENT' || severity === 'BLOCK') return 'urgent';
+        if (severity === 'WARN') return 'warn';
+        return 'info';
+      }
+
+      function getSeverityText(severity) {
+        switch (severity) {
+          case 'URGENT': return '紧急';
+          case 'BLOCK': return '阻断';
+          case 'WARN': return '警告';
+          case 'INFO': return '提示';
+          default: return '未知';
+        }
+      }
+    </script>
+  </body>
+</html>

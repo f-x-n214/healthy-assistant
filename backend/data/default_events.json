@@ -1,0 +1,220 @@
+{
+  "records": [
+    {
+      "id": "evt_20260430_091307_635b",
+      "type": "self_harm",
+      "description": "喝了点酒 感觉活着好难 不想活了",
+      "riskLevel": "BLOCK",
+      "time": "2026-04-30T01:13:07.249Z",
+      "createdAt": "2026-04-30T09:13:07.815449"
+    },
+    {
+      "id": "evt_20260430_103810_bff0",
+      "type": "symptom",
+      "description": "我最近头晕正常吗？",
+      "riskLevel": "WARN",
+      "time": "2026-04-30T02:38:10.411Z",
+      "createdAt": "2026-04-30T10:38:10.730760"
+    },
+    {
+      "id": "evt_20260430_104029_1f6e",
+      "type": "symptom",
+      "description": "我最近头晕正常吗？",
+      "riskLevel": "WARN",
+      "time": "2026-04-30T02:40:28.704Z",
+      "createdAt": "2026-04-30T10:40:29.281708"
+    },
+    {
+      "id": "evt_20260430_113233_c40c",
+      "type": "self_harm",
+      "description": "活着好累 我不想活了",
+      "riskLevel": "BLOCK",
+      "time": "2026-04-30T03:32:33.649Z",
+      "createdAt": "2026-04-30T11:32:33.959759"
+    },
+    {
+      "id": "evt_20260430_113327_efed",
+      "type": "self_harm",
+      "description": "我想死",
+      "riskLevel": "BLOCK",
+      "time": "2026-04-30T03:33:27.593Z",
+      "createdAt": "2026-04-30T11:33:27.904130"
+    },
+    {
+      "id": "evt_20260430_173046_c60c",
+      "type": "urgent",
+      "description": "我感觉呼吸困难怎么办？",
+      "riskLevel": "URGENT",
+      "time": "2026-04-30T09:30:46.149Z",
+      "createdAt": "2026-04-30T17:30:46.734616"
+    },
+    {
+      "id": "evt_20260430_173844_1b08",
+      "type": "urgent",
+      "description": "我感觉呼吸困难 怎么办",
+      "riskLevel": "URGENT",
+      "time": "2026-04-30T09:38:43.877Z",
+      "createdAt": "2026-04-30T17:38:44.460489"
+    },
+    {
+      "id": "evt_20260430_174431_4db2",
+      "type": "urgent",
+      "description": "我感觉呼吸困难",
+      "riskLevel": "URGENT",
+      "time": "2026-04-30T09:44:31.173Z",
+      "createdAt": "2026-04-30T17:44:31.484310"
+    },
+    {
+      "id": "evt_20260430_174610_a043",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-04-30T09:46:09.445Z",
+      "createdAt": "2026-04-30T17:46:10.011414"
+    },
+    {
+      "id": "evt_20260430_175453_b85a",
+      "type": "symptom",
+      "description": "我感觉胸闷怎么办？",
+      "riskLevel": "WARN",
+      "time": "2026-04-30T09:54:53.346Z",
+      "createdAt": "2026-04-30T17:54:53.661516"
+    },
+    {
+      "id": "evt_20260430_175839_2bd9",
+      "type": "urgent",
+      "description": "我感觉意识模糊",
+      "riskLevel": "URGENT",
+      "time": "2026-04-30T09:58:39.084Z",
+      "createdAt": "2026-04-30T17:58:39.660895"
+    },
+    {
+      "id": "evt_20260510_153308_b876",
+      "type": "symptom",
+      "description": "我头晕怎么办？",
+      "riskLevel": "WARN",
+      "time": "2026-05-10T07:33:07.965Z",
+      "createdAt": "2026-05-10T15:33:08.558689"
+    },
+    {
+      "id": "evt_20260510_180756_3aa1",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-05-10T10:07:56.145Z",
+      "createdAt": "2026-05-10T18:07:56.970576"
+    },
+    {
+      "id": "evt_20260510_212935_9331",
+      "type": "urgent",
+      "description": "我刚刚量了血压180/110。",
+      "riskLevel": "URGENT",
+      "time": "2026-05-10T13:29:34.724Z",
+      "createdAt": "2026-05-10T21:29:35.036359"
+    },
+    {
+      "id": "evt_20260510_212954_4907",
+      "type": "urgent",
+      "description": "我刚刚量了血压180/110。",
+      "riskLevel": "URGENT",
+      "time": "2026-05-10T13:29:53.871Z",
+      "createdAt": "2026-05-10T21:29:54.186032"
+    },
+    {
+      "id": "evt_20260510_213826_1b72",
+      "type": "urgent",
+      "description": "我刚刚量了血压180/110。",
+      "riskLevel": "URGENT",
+      "time": "2026-05-10T13:38:26.002Z",
+      "createdAt": "2026-05-10T21:38:26.313495"
+    },
+    {
+      "id": "evt_20260511_122216_d2c5",
+      "type": "urgent",
+      "description": "我刚刚量了血压180/110",
+      "riskLevel": "URGENT",
+      "time": "2026-05-11T04:22:15.814Z",
+      "createdAt": "2026-05-11T12:22:16.138280"
+    },
+    {
+      "id": "evt_20260511_130347_84ec",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-05-11T05:03:46.341Z",
+      "createdAt": "2026-05-11T13:03:47.350068"
+    },
+    {
+      "id": "evt_20260511_144007_dad3",
+      "type": "urgent",
+      "description": "我刚刚测了血压180/110",
+      "riskLevel": "URGENT",
+      "time": "2026-05-11T06:40:06.937Z",
+      "createdAt": "2026-05-11T14:40:07.502525"
+    },
+    {
+      "id": "evt_20260527_141635_5685",
+      "type": "self_harm",
+      "description": "最近想死 活着好不开心",
+      "riskLevel": "BLOCK",
+      "time": "2026-05-27T06:16:34.694Z",
+      "createdAt": "2026-05-27T14:16:35.052810"
+    },
+    {
+      "id": "evt_20260528_090914_f14d",
+      "type": "self_harm",
+      "description": "我想死怎么办",
+      "riskLevel": "BLOCK",
+      "time": "2026-05-28T01:09:14.208Z",
+      "createdAt": "2026-05-28T09:09:14.557724"
+    },
+    {
+      "id": "evt_20260603_142304_4b8d",
+      "type": "self_harm",
+      "description": "我不想活了怎么办",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-03T06:23:03.794Z",
+      "createdAt": "2026-06-03T14:23:04.182654"
+    },
+    {
+      "id": "evt_20260603_143122_4a7a",
+      "type": "self_harm",
+      "description": "我不想活了",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-03T06:31:22.366Z",
+      "createdAt": "2026-06-03T14:31:22.712332"
+    },
+    {
+      "id": "evt_20260609_153809_2aff",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-09T07:38:08.731Z",
+      "createdAt": "2026-06-09T15:38:09.069742"
+    },
+    {
+      "id": "evt_20260609_153829_3f08",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-09T07:38:29.190Z",
+      "createdAt": "2026-06-09T15:38:29.530300"
+    },
+    {
+      "id": "evt_20260609_153851_61a7",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-09T07:38:50.688Z",
+      "createdAt": "2026-06-09T15:38:51.078892"
+    },
+    {
+      "id": "evt_20260609_153917_cbb9",
+      "type": "self_harm",
+      "description": "我想自杀",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-09T07:39:17.003Z",
+      "createdAt": "2026-06-09T15:39:17.399387"
+    }
+  ]
+}

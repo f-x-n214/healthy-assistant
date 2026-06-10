@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API配置状态检查</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .status-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .status-error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        .status-success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .status-warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+        }
+        .status-box h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .status-error h3 {
+            color: #c62828;
+        }
+        .status-success h3 {
+            color: #2e7d32;
+        }
+        .status-warning h3 {
+            color: #ef6c00;
+        }
+        .config-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .config-item h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .config-item code {
+            background: #fff;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: block;
+            margin-bottom: 8px;
+            overflow-x: auto;
+        }
+        .correct {
+            color: #4caf50;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .instruction-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .instruction-box h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+        .instruction-box ol {
+            margin-left: 20px;
+            color: #333;
+        }
+        .instruction-box li {
+            margin-bottom: 10px;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 API配置状态检查</h1>
+
+        <div class="status-box status-error">
+            <h3>❌ 配置尚未更新</h3>
+            <p>检测到配置文件还在使用旧的API Key和模型ID，需要更新后才能正常调用API。</p>
+        </div>
+
+        <h2 style="margin-bottom: 15px;">📋 当前配置状态</h2>
+
+        <div class="config-item">
+            <h4>位置1：API_CONFIG（第21-25行）</h4>
+            <p><strong>当前值：</strong><span class="incorrect">❌ 错误</span></p>
+            <code>key: "ff7ec0954b5c4fcd86454a44697d2094.vu2ADm7nHuNDICBx"</code>
+            <p><strong>应该更新为：</strong><span class="correct">✅ 正确</span></p>
+            <code>key: "ark-e2ed64ff-2a75-4e93-bb9f-8b5ce8e6034a-eb8e3"</code>
+            <p style="margin-top: 10px;"><strong>缺少字段：</strong><span class="incorrect">❌ model</span></p>
+            <code>model: "glm-4-7-251222"</code>
+        </div>
+
+        <div class="config-item">
+            <h4>位置2：model参数（第179行）</h4>
+            <p><strong>当前值：</strong><span class="incorrect">❌ 错误</span></p>
+            <code>model: 'ep-20240422143237-5r6d8'</code>
+            <p><strong>应该更新为：</strong><span class="correct">✅ 正确</span></p>
+            <code>model: API_CONFIG.model || 'glm-4-7-251222'</code>
+        </div>
+
+        <div class="instruction-box">
+            <h3>📝 立即更新配置</h3>
+            <ol>
+                <li>打开文件：<code style="background: #fff; padding: 2px 8px; border-radius: 4px;">frontend/app.js</code></li>
+                <li>找到第21-25行，替换为以下代码：
+                    <div class="code-block">// API配置
+const API_CONFIG = {
+  key: "ark-e2ed64ff-2a75-4e93-bb9f-8b5ce8e6034a-eb8e3",
+  endpoint: "https://ark.cn-beijing.volces.com/api/v3/chat/completions",
+  model: "glm-4-7-251222"
+};</div>
+                </li>
+                <li>找到第179行，替换为以下代码：
+                    <div class="code-block">model: API_CONFIG.model || 'glm-4-7-251222',</div>
+                </li>
+                <li>保存文件</li>
+                <li>刷新此页面或使用测试工具验证</li>
+            </ol>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <button class="btn btn-primary" onclick="window.location.href='test-api.html'">🧪 打开测试工具</button>
+            <button class="btn btn-primary" onclick="window.location.href='config-helper.html'">🔧 打开配置助手</button>
+        </div>
+
+        <div class="status-box status-warning" style="margin-top: 20px;">
+            <h3>💡 提示</h3>
+            <p><strong>降级机制：</strong>即使API配置有问题，项目仍能通过本地mock实现基本功能，不会完全失效。</p>
+            <p style="margin-top: 10px;"><strong>CORS问题：</strong>浏览器直接调用API可能遇到跨域限制，这是正常的安全限制。</p>
+        </div>
+    </div>
+</body>
+</html>

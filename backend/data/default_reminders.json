@@ -1,0 +1,255 @@
+{
+  "reminders": [
+    {
+      "createdAt": "2026-05-10T19:39:10.095061",
+      "drugName": "阿莫西林",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260510_193910_2f05",
+      "message": "20:00 服用阿莫西林",
+      "time": "20:00",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-10T21:40:43.566023",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "daily",
+      "id": "remind_20260510_214043_fb6b",
+      "message": "08:00 服用降压药",
+      "time": "22:00",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-10T22:13:14.628846",
+      "drugName": "阿司匹林",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260510_221314_7b8f",
+      "message": "",
+      "time": "22:15",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-11T12:20:06.659094",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "daily",
+      "id": "remind_20260511_122006_94a3",
+      "message": "",
+      "time": "14:00",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-11T13:03:18.154435",
+      "drugName": "阿莫西林",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260511_130318_253f",
+      "message": "",
+      "time": "14:30",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-11T14:31:01.325485",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260511_143101_1aa4",
+      "message": "",
+      "time": "14:38",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-11T14:38:07.567666",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260511_143807_ade7",
+      "message": "",
+      "time": "14:50",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-18T14:22:07.450841",
+      "drugName": "氨氯地平",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260518_142207_c305",
+      "message": "",
+      "time": "15:00",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-18T14:40:31.024262",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260518_144031_fabe",
+      "message": "",
+      "time": "14:45",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-18T14:56:16.880829",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260518_145616_1196",
+      "message": "",
+      "time": "14:59",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-21T10:39:48.988659",
+      "drugName": "布洛芬",
+      "enabled": true,
+      "frequency": "daily",
+      "id": "remind_20260521_103948_491e",
+      "message": "",
+      "time": "10:00",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-21T11:22:14.923140",
+      "drugName": "降压药",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260521_112214_26b8",
+      "message": "",
+      "time": "11:32",
+      "type": "medication"
+    },
+    {
+      "createdAt": "2026-05-27T14:53:09.637796",
+      "drugName": "",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260527_145309_ba35",
+      "message": "",
+      "time": "15:03",
+      "type": "temperature"
+    },
+    {
+      "createdAt": "2026-05-27T14:54:21.041612",
+      "drugName": "",
+      "enabled": false,
+      "frequency": "once",
+      "id": "remind_20260527_145421_9e13",
+      "message": "",
+      "time": "15:04",
+      "type": "temperature"
+    },
+    {
+      "id": "remind_20260528_084148_936e",
+      "type": "activity",
+      "drugName": "",
+      "time": "17:00",
+      "frequency": "daily",
+      "enabled": true,
+      "message": "傍晚散步时间到了",
+      "createdAt": "2026-05-28T08:41:48.146492"
+    },
+    {
+      "id": "remind_20260528_085507_1786",
+      "type": "temperature",
+      "drugName": "降压药",
+      "time": "09:00",
+      "frequency": "daily",
+      "enabled": true,
+      "message": "",
+      "createdAt": "2026-05-28T08:55:07.566158"
+    },
+    {
+      "id": "remind_20260528_090501_c50f",
+      "type": "temperature",
+      "drugName": "",
+      "time": "09:10",
+      "frequency": "once",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-05-28T09:05:01.543760"
+    },
+    {
+      "id": "remind_20260528_100450_c272",
+      "type": "medication",
+      "drugName": "阿莫西林",
+      "time": "10:10",
+      "frequency": "once",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-05-28T10:04:50.593711"
+    },
+    {
+      "id": "remind_20260528_101450_e50e",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "10:19",
+      "frequency": "once",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-05-28T10:14:50.711537"
+    },
+    {
+      "id": "remind_20260608_162244_49c1",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "16:30",
+      "frequency": "daily",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-08T16:22:44.368996"
+    },
+    {
+      "id": "remind_20260608_164142_8725",
+      "type": "medication",
+      "drugName": "提醒我本周一",
+      "time": "17:00",
+      "frequency": "weekly",
+      "enabled": true,
+      "message": "",
+      "createdAt": "2026-06-08T16:41:42.455773"
+    },
+    {
+      "id": "remind_20260608_164219_40e8",
+      "type": "temperature",
+      "drugName": "",
+      "time": "17:00",
+      "frequency": "weekly",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-08T16:42:19.883814"
+    },
+    {
+      "id": "remind_20260608_164315_de58",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "17:00",
+      "frequency": "daily",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-08T16:43:15.338529"
+    },
+    {
+      "id": "remind_20260608_164334_1b06",
+      "type": "medication",
+      "drugName": "每天",
+      "time": "16:50",
+      "frequency": "daily",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-08T16:43:34.423374"
+    },
+    {
+      "id": "remind_20260608_164409_9e01",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "16:55",
+      "frequency": "once",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-08T16:44:09.142524"
+    }
+  ],
+  "userId": "default"
+}
