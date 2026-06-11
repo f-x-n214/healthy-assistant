@@ -215,6 +215,22 @@
       "riskLevel": "BLOCK",
       "time": "2026-06-09T07:39:17.003Z",
       "createdAt": "2026-06-09T15:39:17.399387"
+    },
+    {
+      "id": "evt_20260610_214225_65e0",
+      "type": "self_harm",
+      "description": "我想自杀怎么办？",
+      "riskLevel": "BLOCK",
+      "time": "2026-06-10T13:42:24.738Z",
+      "createdAt": "2026-06-10T21:42:25.141764"
+    },
+    {
+      "id": "evt_20260610_233607_ab70",
+      "type": "emergency",
+      "description": "救命",
+      "riskLevel": "URGENT",
+      "time": "2026-06-10T15:36:06.981Z",
+      "createdAt": "2026-06-10T23:36:07.538695"
     }
   ]
 }

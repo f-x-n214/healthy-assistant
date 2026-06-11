@@ -84,7 +84,7 @@ export function runSafetyCheck(utterance, aiResult) {
   }
 
   // 2) 紧急：关键词或指标触发 URGENT
-  if (includesAny(text, ["胸痛", "呼吸困难", "昏迷", "意识模糊", "口角歪斜", "说不清", "一侧无力", "120"])) {
+  if (includesAny(text, ["救命", "急救", "胸痛", "呼吸困难", "昏迷", "意识模糊", "口角歪斜", "说不清", "一侧无力", "120"])) {
     return { riskLevel: "URGENT", reasons: ["检测到疑似紧急风险信号"], matched: null };
   }
 

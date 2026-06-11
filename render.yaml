@@ -1,0 +1,21 @@
+# Render 一键部署配置（可选：在 Render Dashboard 选 Blueprint 时使用）
+services:
+  - type: web
+    name: healthy-silver-health
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120 --workers 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: DASHSCOPE_API_KEY
+        sync: false
+      - key: DASHSCOPE_MODEL
+        value: qwen-plus
+      - key: QWEATHER_API_KEY
+        sync: false
+      - key: QWEATHER_API_HOST
+        sync: false
+      - key: QWEATHER_DEFAULT_LOCATION
+        value: "101280101"

@@ -3,11 +3,13 @@
  * 检测健康数据异常、症状异常、行为异常等，并生成告警通知
  */
 
+import { API_BASE } from "../config.js";
+
 export class AlertService {
   constructor() {
     this.alerts = [];
     this.STORAGE_KEY = 'health_alerts';
-    this.API_BASE = 'http://localhost:5001/api';
+    this.API_BASE = API_BASE;
     this.userId = 'default';
   }
 

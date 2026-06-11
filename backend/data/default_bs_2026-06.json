@@ -63,6 +63,15 @@
       "time": "2026-06-09T08:02:40.893Z",
       "source": "llm",
       "createdAt": "2026-06-09T16:02:41.205579"
+    },
+    {
+      "id": "bs_20260610_231105_babc",
+      "value": 6.5,
+      "unit": "mmol/L",
+      "type": "fasting",
+      "time": "2026-06-10T15:11:05.330Z",
+      "source": "llm",
+      "createdAt": "2026-06-10T23:11:05.904715"
     }
   ],
   "statistics": {}

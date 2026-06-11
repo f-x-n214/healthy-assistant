@@ -1,17 +1,48 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from memory_service import MemoryStore
 from reminder_engine import ReminderEngine
 from family_service import FamilyDB
 from weather_service import weather_service
 import os
+import requests
 
-app = Flask(__name__)
-CORS(app, 
-     origins=["http://localhost:63342", "http://localhost:8080", "http://127.0.0.1:63342"], 
-     supports_credentials=True,
-     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization", "Origin", "Accept"])
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.normpath(os.path.join(BASE_DIR, "..", "frontend"))
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(BASE_DIR, "..", ".env"))
+    load_dotenv(os.path.join(BASE_DIR, ".env"))
+except ImportError:
+    pass
+
+DASHSCOPE_API_KEY = os.environ.get("DASHSCOPE_API_KEY") or os.environ.get("LLM_API_KEY", "")
+DASHSCOPE_ENDPOINT = os.environ.get(
+    "DASHSCOPE_ENDPOINT",
+    "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+)
+DASHSCOPE_MODEL = os.environ.get("DASHSCOPE_MODEL", "qwen-plus")
+
+_default_cors = (
+    "http://localhost:63342,http://localhost:8080,"
+    "http://127.0.0.1:63342,http://127.0.0.1:8080,http://localhost:5001"
+)
+_cors_origins = [
+    o.strip()
+    for o in os.environ.get("CORS_ORIGINS", _default_cors).split(",")
+    if o.strip()
+]
+
+app = Flask(__name__, static_folder=None)
+CORS(
+    app,
+    origins=_cors_origins,
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "Origin", "Accept"],
+)
 
 memory_store = MemoryStore()
 reminder_engine = ReminderEngine(memory_store)
@@ -512,37 +543,135 @@ def get_parent_alerts(parent_id):
 
 
 # ==================== 天气服务 API ====================
+def _weather_location_from_request():
+    """支持 location（推荐）、city（兼容旧参数）、经纬度 lat+lon"""
+    location = request.args.get("location") or request.args.get("city")
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+    if not location and lat and lon:
+        location = f"{lon},{lat}"
+    return location
+
+
 @app.route("/api/weather/current", methods=["GET"])
 def get_current_weather():
-    city = request.args.get('city', '101280101')
-    data = weather_service.fetch_weather(city)
+    data = weather_service.fetch_weather(_weather_location_from_request())
     return jsonify({"ok": True, "data": data})
 
 
 @app.route("/api/weather/forecast", methods=["GET"])
 def get_weather_forecast():
-    city = request.args.get('city', '101280101')
-    data = weather_service.fetch_forecast(city)
+    data = weather_service.fetch_forecast(_weather_location_from_request())
     return jsonify({"ok": True, "data": data})
 
 
 @app.route("/api/weather/advisory", methods=["GET"])
 def get_weather_advisory():
-    user_id = request.args.get('user_id', 'default')
-    data = weather_service.get_health_advisory(user_id)
+    user_id = request.args.get("user_id", "default")
+    data = weather_service.get_health_advisory(user_id, _weather_location_from_request())
     return jsonify({"ok": True, "data": data})
 
 
 @app.route("/api/weather/alerts", methods=["GET"])
 def get_weather_alerts():
-    alerts = weather_service.check_weather_alerts()
+    alerts = weather_service.check_weather_alerts(_weather_location_from_request())
     return jsonify({"ok": True, "data": alerts})
 
 
+# ==================== 大模型代理（API Key 仅存服务端） ====================
+@app.route("/api/llm/config", methods=["GET"])
+def llm_config():
+    return jsonify({
+        "ok": True,
+        "configured": bool(DASHSCOPE_API_KEY),
+        "model": DASHSCOPE_MODEL,
+        "endpoint": DASHSCOPE_ENDPOINT.split("/")[2] if DASHSCOPE_ENDPOINT else "",
+    })
+
+
+@app.route("/api/llm/chat", methods=["POST"])
+def llm_chat_proxy():
+    if not DASHSCOPE_API_KEY:
+        return jsonify({
+            "ok": False,
+            "error": "DASHSCOPE_API_KEY 未配置，请在项目根目录创建 .env 文件（参考 .env.example）",
+        }), 500
+
+    body = request.get_json(force=True)
+    payload = {
+        "model": body.get("model", DASHSCOPE_MODEL),
+        "messages": body.get("messages", []),
+        "temperature": body.get("temperature", 0.2),
+        "max_tokens": body.get("max_tokens", 300),
+    }
+
+    try:
+        resp = requests.post(
+            DASHSCOPE_ENDPOINT,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {DASHSCOPE_API_KEY}",
+            },
+            json=payload,
+            timeout=90,
+        )
+    except requests.RequestException as e:
+        return jsonify({"ok": False, "error": f"LLM 请求失败: {e}"}), 502
+
+    if not resp.ok:
+        try:
+            err_body = resp.json()
+            err_obj = err_body.get("error", err_body)
+            msg = err_obj.get("message", resp.text) if isinstance(err_obj, dict) else resp.text
+        except ValueError:
+            msg = resp.text
+        return jsonify({"ok": False, "error": msg}), resp.status_code
+
+    return jsonify(resp.json())
+
+
+# ==================== 前端静态资源（Render 一体部署） ====================
+@app.route("/")
+def serve_index():
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+
+@app.route("/<path:filepath>")
+def serve_frontend(filepath):
+    if filepath.startswith("api/"):
+        return jsonify({"ok": False, "error": "not found"}), 404
+
+    safe_path = os.path.normpath(filepath)
+    if safe_path.startswith(".."):
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+
+    file_on_disk = os.path.join(FRONTEND_DIR, safe_path)
+    if os.path.isfile(file_on_disk):
+        return send_from_directory(FRONTEND_DIR, safe_path)
+
+    html_path = file_on_disk + ".html"
+    if os.path.isfile(html_path):
+        return send_from_directory(FRONTEND_DIR, safe_path + ".html")
+
+    return send_from_directory(FRONTEND_DIR, "index.html")
+
+
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5001))
+    debug = os.environ.get("FLASK_DEBUG", "1") == "1"
     print("=" * 50)
-    print("  银发健康助手 - 记忆后端服务")
-    print("  http://localhost:5001/api/health")
-    print("  http://localhost:5001/api/weather/current")
+    print("  银发健康助手")
+    print(f"  前端+后端: http://localhost:{port}")
+    print(f"  API 健康检查: http://localhost:{port}/api/health")
+    if DASHSCOPE_API_KEY:
+        print(f"  大模型: {DASHSCOPE_MODEL} @ {DASHSCOPE_ENDPOINT}")
+    else:
+        print("  大模型: 未配置（请在 .env 中设置 DASHSCOPE_API_KEY）")
+    qweather_key = os.environ.get("QWEATHER_API_KEY", "")
+    qweather_host = os.environ.get("QWEATHER_API_HOST", "")
+    if qweather_key:
+        print(f"  天气: 和风天气 @ {qweather_host or 'devapi.qweather.com'}")
+    else:
+        print("  天气: 未配置和风 Key（将使用模拟天气）")
     print("=" * 50)
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=debug)

@@ -199,15 +199,14 @@ export function extractWeightData(aiResult, utterance) {
   const u = utterance ?? "";
   let value = null;
 
-  const kgMatch = u.match(/(\d+\.?\d*)\s*(公斤|kg|千克)/);
-  if (kgMatch) value = Number(kgMatch[1]);
-  
-  // 支持斤
-  const jinMatch = u.match(/(\d+\.?\d*)\s*(斤)/);
-  if (jinMatch) {
-    const jinValue = Number(jinMatch[1]);
-    // 斤转换为公斤
-    value = Math.round(jinValue / 2);
+  const kgMatch = u.match(/(\d+\.?\d*)\s*(?:公斤|kg|千克)/i);
+  if (kgMatch) {
+    value = Number(kgMatch[1]);
+  } else {
+    const jinMatch = u.match(/(\d+\.?\d*)\s*(?<![公千])斤/);
+    if (jinMatch) {
+      value = Math.round(Number(jinMatch[1]) / 2);
+    }
   }
 
   return {

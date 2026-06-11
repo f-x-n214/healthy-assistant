@@ -2,12 +2,10 @@
  * 记忆系统 - MemoryService 核心类
  * 
  * 使用 Flask + ChromaDB 后端进行持久化存储和语义检索
- * 后端接口：http://localhost:5001/api/memory/...
  */
 
 import { MemoryCache } from "./memoryCache.js";
-
-const API_BASE = "http://localhost:5001/api";
+import { API_BASE } from "../config.js";
 
 export class MemoryService {
   constructor(userId = "default") {
@@ -195,7 +193,7 @@ export class MemoryService {
     const cached = this.cache.get(cacheKey, "records");
     if (cached) return cached;
 
-    const records = await this._request("GET", `/memory/record/${this.userId}/wt?days=${days}`);
+    const records = await this._request("GET", `/memory/record/${this.userId}/weight?days=${days}`);
     this.cache.set(cacheKey, records, "records");
     return records;
   }

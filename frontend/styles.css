@@ -1208,6 +1208,10 @@ html, body {
   margin-bottom: 28px;
 }
 
+.weather-modal__clothing {
+  margin-bottom: 28px;
+}
+
 .weather-modal__recommendation {
   margin-bottom: 20px;
 }
@@ -1215,12 +1219,27 @@ html, body {
 .weather-advisory-item {
   display: flex;
   align-items: flex-start;
-  padding: 16px 20px;
+  padding: 18px 22px;
   background: rgba(92, 107, 192, 0.08);
   border-radius: var(--radius);
   margin-bottom: 12px;
   font-size: var(--font-xl);
-  line-height: 1.8;
+  line-height: 1.85;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.weather-advisory-item--empty,
+.weather-advisory-item--loading {
+  justify-content: center;
+  text-align: center;
+  color: var(--text-primary);
+  background: rgba(92, 107, 192, 0.06);
+}
+
+#weatherAdvisoryList {
+  font-size: var(--font-xl);
+  line-height: 1.85;
 }
 
 /* 顶部栏：品牌 + 快捷操作 */

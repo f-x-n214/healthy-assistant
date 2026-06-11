@@ -13,6 +13,25 @@
  * 支持从大模型提取结果和正则两种方式
  */
 
+// 不能当作姓名的性别/称呼词
+const GENDER_LABELS = new Set([
+  "男的", "女的", "男生", "女生", "男性", "女性", "男人", "女人",
+  "大爷", "大妈", "阿姨", "大叔", "大伯", "伯母", "男士", "女士",
+]);
+
+export function isGenderLabel(text) {
+  if (!text) return false;
+  const t = String(text).trim();
+  return GENDER_LABELS.has(t) || /^(男|女)(的|性|生|人)?$/.test(t);
+}
+
+function normalizeGenderValue(text) {
+  const u = text ?? "";
+  if (/女/.test(u)) return "女";
+  if (/男/.test(u)) return "男";
+  return null;
+}
+
 // 常见慢性病列表
 const CHRONIC_DISEASES = [
   "高血压", "糖尿病", "高血脂", "冠心病", "关节炎",
@@ -79,7 +98,10 @@ export function extractProfileData(aiResult, utterance) {
     const ed = aiResult.extractedData;
     
     if (ed.name || ed.userName || ed.patientName) {
-      result.name = ed.name || ed.userName || ed.patientName;
+      const rawName = ed.name || ed.userName || ed.patientName;
+      if (!isGenderLabel(rawName)) {
+        result.name = rawName;
+      }
     }
     
     if (ed.age !== undefined) {
@@ -133,14 +155,15 @@ export function extractProfileData(aiResult, utterance) {
   // 降级：使用正则从用户输入中提取
   const u = utterance ?? "";
   
-  // 提取姓名
+  // 提取性别与姓名（性别优先，避免「我是女的」被当成名字）
+  result.gender = extractGenderFromText(u);
   result.name = extractNameFromText(u);
+  if (result.name && isGenderLabel(result.name)) {
+    result.name = null;
+  }
   
   // 提取年龄
   result.age = extractAgeFromText(u);
-  
-  // 提取性别
-  result.gender = extractGenderFromText(u);
   
   // 提取身高
   result.height = extractHeightFromText(u);
@@ -190,26 +213,32 @@ export function extractProfileData(aiResult, utterance) {
  */
 function extractNameFromText(text) {
   const u = text ?? "";
+
+  // 整句是性别声明，不是姓名
+  if (/^(我是|我叫)?(男的|女的|男生|女生|男性|女性)$/.test(u.trim())) {
+    return null;
+  }
+  if (/^(我的)?性别是(男的|女的|男|女|男性|女性)$/.test(u.trim())) {
+    return null;
+  }
   
-  // 模式：我叫XXX / 我是XXX / 姓名XXX / 名字是XXX
+  // 模式：我叫XXX / 姓名XXX / 名字是XXX（「我是XXX」需排除性别词）
   const namePatterns = [
     /我叫\s*([\u4e00-\u9fa5]{2,4})/,
-    /我是\s*([\u4e00-\u9fa5]{2,4})/,
     /姓名\s*[：:]\s*([\u4e00-\u9fa5]{2,4})/,
     /名字\s*(?:是)?\s*([\u4e00-\u9fa5]{2,4})/,
     /姓\s*([\u4e00-\u9fa5]{1,2})\s*名\s*([\u4e00-\u9fa5]{1,3})/,
     /我姓\s*([\u4e00-\u9fa5]{1,2})/,
-    /称呼\s*[：:]\s*([\u4e00-\u9fa5]{2,4})/
+    /称呼\s*[：:]\s*([\u4e00-\u9fa5]{2,4})/,
+    /^我是([\u4e00-\u9fa5]{2,4})$/,
   ];
   
   for (const pattern of namePatterns) {
     const match = u.match(pattern);
     if (match) {
-      // 如果是姓+名的模式，组合起来
-      if (match[2]) {
-        return match[1] + match[2];
-      }
-      return match[1];
+      const candidate = match[2] ? match[1] + match[2] : match[1];
+      if (isGenderLabel(candidate)) continue;
+      return candidate;
     }
   }
   
@@ -248,19 +277,29 @@ function extractAgeFromText(text) {
  */
 function extractGenderFromText(text) {
   const u = text ?? "";
-  
-  if (/男(?:士|生|人)?/.test(u)) {
-    return "男";
+
+  if (/^(我是|我叫)?(男的|女的|男生|女生|男性|女性)$/.test(u.trim())) {
+    return normalizeGenderValue(u);
   }
-  if (/女(?:士|生|人)?/.test(u)) {
-    return "女";
+  if (/^(我的)?性别是(男的|女的|男|女|男性|女性)/.test(u.trim())) {
+    return normalizeGenderValue(u);
   }
   
-  // 通过称呼推断性别
   if (/我是大爷|我是大叔|我是伯父/.test(u)) {
     return "男";
   }
   if (/我是大妈|我是阿姨|我是伯母/.test(u)) {
+    return "女";
+  }
+
+  if (/性别/.test(u)) {
+    return normalizeGenderValue(u);
+  }
+  
+  if (/男(?:士|生|人)?/.test(u) && !/女/.test(u)) {
+    return "男";
+  }
+  if (/女(?:士|生|人)?/.test(u)) {
     return "女";
   }
   
@@ -328,25 +367,32 @@ function extractHeightFromText(text) {
 }
 
 /**
+ * 判断匹配片段是否为「斤」单位（排除公斤、千克）
+ */
+function isJinWeightUnit(matchedText) {
+  const t = matchedText ?? "";
+  return /斤/.test(t) && !/(公斤|千克)/.test(t);
+}
+
+/**
  * 从文本中提取体重
  */
 function extractWeightFromText(text) {
   const u = text ?? "";
   
   const weightPatterns = [
-    /(?:体重|我)\s*(?:是)?\s*(\d{2,3})\s*(?:公斤|kg|千克)/,
-    /(\d{2,3})\s*(?:公斤|kg|千克)/,
+    /(?:体重|我)\s*(?:是)?\s*(\d{2,3})\s*(?:公斤|kg|千克)/i,
+    /(\d{2,3})\s*(?:公斤|kg|千克)/i,
     /体重\s*[：:]\s*(\d{2,3})/,
-    /(?:体重|我)\s*(?:是)?\s*(\d{2,3})\s*(?:斤)/,
-    /(\d{2,3})\s*(?:斤)/
+    /(?:体重|我)\s*(?:是)?\s*(\d{2,3})\s*斤/,
+    /(\d{2,3})\s*斤/
   ];
   
   for (const pattern of weightPatterns) {
     const match = u.match(pattern);
     if (match) {
       let weight = Number(match[1]);
-      // 如果是斤，转换为公斤
-      if (pattern.source.includes('斤') && weight > 40 && weight < 400) {
+      if (isJinWeightUnit(match[0])) {
         weight = Math.round(weight / 2);
       }
       if (weight > 20 && weight < 200) {
@@ -499,16 +545,22 @@ export function shouldUpdateProfile(extracted) {
 export function mergeProfileData(existingProfile, extractedData) {
   const merged = { ...existingProfile };
   
-  if (extractedData.name && !merged.name) {
-    merged.name = extractedData.name;
+  if (extractedData.name && !isGenderLabel(extractedData.name)) {
+    if (!merged.name || isGenderLabel(merged.name)) {
+      merged.name = extractedData.name;
+    }
   }
   
   if (extractedData.age && !merged.age) {
     merged.age = extractedData.age;
   }
   
-  if (extractedData.gender && !merged.gender) {
-    merged.gender = extractedData.gender;
+  if (extractedData.gender) {
+    merged.gender = normalizeGenderValue(extractedData.gender) || extractedData.gender;
+    // 若之前误把「女的/男的」存成姓名，在用户声明性别时清除
+    if (isGenderLabel(merged.name)) {
+      merged.name = "";
+    }
   }
   
   // 身高总是更新为最新值

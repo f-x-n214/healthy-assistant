@@ -11,6 +11,19 @@
       "source": "reminder",
       "createdAt": "2026-06-09T16:31:10.985627",
       "time": "2026-06-09T16:31:10.985633"
+    },
+    {
+      "id": "med_20260610_232024_9b7d",
+      "drugName": "阿司匹林",
+      "dose": {
+        "amount": null,
+        "unit": ""
+      },
+      "time": "2026-06-10T15:20:24.048Z",
+      "person": "self",
+      "notes": "",
+      "source": "regex",
+      "createdAt": "2026-06-10T23:20:24.359775"
     }
   ],
   "statistics": {}

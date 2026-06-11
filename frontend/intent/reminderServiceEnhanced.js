@@ -10,7 +10,7 @@
  * - 连续漏服通知子女
  */
 
-const API_BASE = "http://localhost:5001/api";
+import { API_BASE } from "../config.js";
 const POLL_INTERVAL = 30 * 1000; // 30 秒轮询
 const RESCHEDULE_DELAY = 10 * 60 * 1000; // 10 分钟后重提醒
 const MISSED_THRESHOLD = 2; // 连续漏服 2 次通知子女

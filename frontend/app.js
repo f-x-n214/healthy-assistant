@@ -24,12 +24,13 @@ import {
   extractEmotionData,
   extractReminderData,
 } from "./intent/dataExtractor.js";
-import { extractProfileData, shouldUpdateProfile, mergeProfileData } from "./intent/profileExtractor.js";
+import { extractProfileData, shouldUpdateProfile, mergeProfileData, isGenderLabel } from "./intent/profileExtractor.js";
 import { alertService } from "./intent/alertService.js";
 import { ReminderService } from "./intent/reminderService.js";
 import { voiceService } from "./intent/voiceService.js";
 import { ttsService } from "./intent/ttsService.js";
 import { applyFontSize } from "./utils.js";
+import { API_BASE } from "./config.js";
 
 // ==================== 会话记忆（短期） ====================
 const MEMORY = {
@@ -37,6 +38,7 @@ const MEMORY = {
   pending: {
     bp: null, // { systolic: number }
     query: null, // { metric: "bp"|"medication"|"exercise"|"diet"|"stats", subIntent: string, at: number }
+    qa: null, // { originalQuestion, subIntent, clarifyQuestions?, at } - 健康咨询追问上下文
     reminder: null, // { type: string, at: number } - 用于继承提醒意图
     waitingForConfirm: null, // 当前待确认的提醒 { reminderId, drugName, type, triggeredAt }
   },
@@ -58,19 +60,13 @@ let memoryService = null;
 let reminderService = null;
 const CURRENT_USER_ID = "default";
 
-// ==================== API配置 ====================
-const API_CONFIG = {
-  key: "sk-0106c4a4204f4c3bb5a9eabdbc4e92eb",
-  endpoint: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-  model: "qwen-plus"
-};
-
-// 后端API基础地址
-const API_BASE = 'http://localhost:5001/api';
+// 大模型通过后端代理，API Key 仅存服务端环境变量
+const LLM_ENDPOINT = `${API_BASE}/llm/chat`;
 
 const INTENTS = {
   MED_ADD: "INT_MED_ADD",
   MED_QUERY: "INT_MED_QUERY",
+  MED_MISSED: "INT_MED_MISSED",
   MED_REMIND_SET: "INT_MED_REMIND_SET",
   MED_REMIND_CANCEL: "INT_MED_REMIND_CANCEL",
   REMIND_QUERY: "INT_REMIND_QUERY",
@@ -218,6 +214,126 @@ function clearPendingQueryIfResolved(subIntent, utterance) {
   }
 }
 
+function rememberPendingQa(originalQuestion, subIntent, clarifyQuestions = []) {
+  MEMORY.pending.qa = {
+    originalQuestion,
+    subIntent,
+    clarifyQuestions,
+    at: Date.now(),
+  };
+}
+
+function detectPendingQaReply(utterance) {
+  if (!MEMORY.pending.qa) return null;
+  const expired = Date.now() - MEMORY.pending.qa.at > 5 * 60 * 1000;
+  if (expired) {
+    MEMORY.pending.qa = null;
+    return null;
+  }
+  return { ...MEMORY.pending.qa, supplement: utterance };
+}
+
+function extractQaSupplement(utterance) {
+  const info = { raw: utterance };
+  const bpMatch = (utterance ?? "").match(/(\d{2,3})\s*\/\s*(\d{2,3})/);
+  if (bpMatch) {
+    info.bpSystolic = Number(bpMatch[1]);
+    info.bpDiastolic = Number(bpMatch[2]);
+  }
+  if (/^(没有|无|不会|不疼|不晕|不涨|还好|正常|没事)$/.test((utterance ?? "").trim()) || /没有|不会|无.*(头晕|胸闷|气喘|不舒服)/.test(utterance ?? "")) {
+    info.hasSymptoms = false;
+  } else if (/(头晕|胸闷|气喘|心慌|不舒服|有点|偶尔有)/.test(utterance ?? "") && !/没有|不会|无/.test(utterance ?? "")) {
+    info.hasSymptoms = true;
+  }
+  return info;
+}
+
+function shouldRememberPendingQa(text) {
+  if (!text) return false;
+  return /(\d+\.\s*.+[？?])|((请问|想了解|告诉我|方便说|先了解|补充).+[？?])/.test(text);
+}
+
+function shouldUseHealthQaForExercise(subIntent, utterance) {
+  return subIntent === "exercise.recommend" && /(吗|么|能不能|可以吗|行不行|好不好)/.test(utterance ?? "");
+}
+
+function isSimpleGreeting(utterance) {
+  return /^(你好|您好|嗨|hi|在吗|早上好|上午好|中午好|下午好|晚上好|晚安|谢谢|感谢|再见|拜拜|好的|好|嗯|嗯嗯|收到|明白了)$/i.test((utterance ?? "").trim());
+}
+
+function isProfileViewRequest(utterance) {
+  return /(查看个人画像|我的画像|个人画像|查看画像|我要看我的个人画像|我就要看我的个人画像|给我看个人画像|显示个人画像)/.test(utterance ?? "");
+}
+
+function isProfileUpdateRequest(utterance) {
+  const u = (utterance ?? "").trim();
+  if (!u || isProfileViewRequest(u)) return false;
+  return /^(我是男的|我是女的|我是男|我是女|我的性别是|性别是)|^(我叫|我的身高是|我的体重是|我今年\d{1,3}岁)/.test(u);
+}
+
+function shouldForceLLM(utterance) {
+  const u = (utterance ?? "").trim();
+  if (!u || isSimpleGreeting(u)) return false;
+  if (/(忘记|漏服|忘吃|没吃药|没服药|未服药).*(药|服药|用药)/.test(u)) return false;
+  if (/(血压|血糖|体重).*\d|^\d{2,3}\s*\/\s*\d{2,3}/.test(u)) return false;
+  if (/(记录|添加|登记|查询|查看).*(血压|血糖|用药|提醒|运动|饮食)/.test(u)) return false;
+  if (/(设置|取消|关闭|开启).*(提醒|闹钟)/.test(u)) return false;
+
+  if (/(怎么办|能不能|可以吗|为什么|怎么样|如何|该怎么|是否正常|有没有问题|有什么建议|该怎么做)/.test(u)) return true;
+  if (/(老了|不中用|没用|年纪大|走不动|不被需要|没价值|拖累)/.test(u)) return true;
+  if (/(你能帮|你会什么|能做什么|有什么功能|帮我做什么|可以帮我)/.test(u)) return true;
+  if (/(孤独|孤单|难受|害怕|焦虑|伤心|难过|郁闷|心烦|低落).*[吗么？?]/.test(u)) return true;
+  if (/[吗么？?]$/.test(u) && u.length > 4) return true;
+  return false;
+}
+
+function shouldUseLLMReply(subIntent, utterance) {
+  if (subIntent === "medication.med_log" || subIntent === "medication.missed_dose") return false;
+  if (subIntent === "health_data.weight_log" || subIntent === "health_data.bp_log" || subIntent === "health_data.bs_log") return false;
+  if (subIntent === "chat.profile_view" || isProfileViewRequest(utterance)) return false;
+  if (subIntent === "chat.profile" || isProfileUpdateRequest(utterance)) return false;
+  if (subIntent === "emergency.sos") return false;
+  return (
+    isHealthQaSubIntent(subIntent) ||
+    shouldUseHealthQaForExercise(subIntent, utterance) ||
+    shouldForceLLM(utterance)
+  );
+}
+
+function detectImplicitQaFollowUp(utterance) {
+  let lastAssistant = null;
+  let originalQuestion = "";
+
+  for (let i = MEMORY.history.length - 1; i >= 0; i--) {
+    if (MEMORY.history[i].role !== "assistant") continue;
+    lastAssistant = MEMORY.history[i];
+    for (let j = i - 1; j >= 0; j--) {
+      if (MEMORY.history[j].role === "user") {
+        originalQuestion = MEMORY.history[j].text;
+        break;
+      }
+    }
+    break;
+  }
+
+  if (!lastAssistant) return null;
+
+  const askedFollowUp = /血压控制|高压\/低压|头晕|胸闷|走路气喘|想了解|请问|先了解|补充/.test(lastAssistant.text);
+  const looksLikeAnswer =
+    /(\d{2,3}\s*\/\s*\d{2,3})/.test(utterance ?? "") ||
+    /^(没有|无|不会|还好|正常|没事)([\s，,。.!！?？]*)?$/.test((utterance ?? "").trim());
+
+  if (!askedFollowUp || !looksLikeAnswer) return null;
+
+  return {
+    originalQuestion,
+    subIntent: "health_qa.general",
+    clarifyQuestions: [],
+    at: Date.now(),
+    supplement: utterance,
+  };
+}
+
 // ==================== UI 渲染 ====================
 
 // 消息ID计数器
@@ -302,6 +418,92 @@ function isHealthQaSubIntent(subIntent) {
 
 // ==================== 大模型健康咨询回复 ====================
 
+async function callHealthQaContinuation(pendingQa, supplement, { profile, memory } = {}) {
+  try {
+    let profileContext = "";
+    if (profile) {
+      profileContext = `
+用户画像：
+- 姓名：${profile.name || "未知"}
+- 年龄：${profile.age ? profile.age + "岁" : "未知"}
+- 性别：${profile.gender || "未知"}
+- 慢性病史：${profile.chronicDiseases?.join("、") || "未知"}
+- 过敏史：${profile.allergies?.join("、") || "未知"}
+- 当前用药：${profile.currentMedications?.map((m) => m.name || m).join("、") || "未知"}`;
+    }
+
+    const bpInfo =
+      Number.isFinite(supplement.bpSystolic) && Number.isFinite(supplement.bpDiastolic)
+        ? `血压约 ${supplement.bpSystolic}/${supplement.bpDiastolic} mmHg`
+        : "";
+    const symptomInfo =
+      supplement.hasSymptoms === false
+        ? "用户否认头晕、胸闷、走路气喘等不适"
+        : supplement.hasSymptoms === true
+          ? "用户表示有相关不适症状"
+          : "";
+
+    const clarifyBlock = pendingQa.clarifyQuestions?.length
+      ? pendingQa.clarifyQuestions.map((q, i) => `${i + 1}. ${q}`).join("\n")
+      : "助手此前询问了血压控制情况和症状情况";
+
+    const systemPrompt = `你是银发健康助手，专为中老年人提供贴心的健康服务，不替代医生诊断。
+
+用户正在回答你上一轮健康咨询的追问，请结合完整上下文给出明确建议。
+要求：
+1. 直接回答用户最初的问题，不要只说“已记录血压”。
+2. 若用户补充了血压数值，结合数值判断运动/饮食等建议是否合适。
+3. 回答简洁，用短句，避免专业术语。
+4. 输出纯文本，不要 JSON。
+
+${profileContext}`;
+
+    const userPrompt = `咨询类型：${pendingQa.subIntent || "health_qa.general"}
+用户最初问题：${pendingQa.originalQuestion}
+助手曾追问：
+${clarifyBlock}
+用户补充回答：${supplement.raw}
+${bpInfo ? `已提取：${bpInfo}` : ""}
+${symptomInfo ? `已提取：${symptomInfo}` : ""}
+
+请给出完整、实用的健康建议。`;
+
+    const response = await fetch(LLM_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.4,
+        max_tokens: 1500,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`健康咨询续答失败: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    let content = (data.choices?.[0]?.message?.content || "").trim();
+    content = content.replace(/\*\*/g, "");
+
+    if (!content && Number.isFinite(supplement.bpSystolic) && Number.isFinite(supplement.bpDiastolic)) {
+      const high = supplement.bpSystolic >= 140 || supplement.bpDiastolic >= 90;
+      content = high
+        ? `您最近血压 ${supplement.bpSystolic}/${supplement.bpDiastolic} mmHg，偏高，不建议快跑。\n建议先从散步、太极拳等温和运动开始，每次20到30分钟，感觉微微出汗即可。\n如果运动时头晕、胸闷，请马上停下来休息，并按时监测血压。`
+        : `您最近血压 ${supplement.bpSystolic}/${supplement.bpDiastolic} mmHg，控制尚可，仍不建议突然快跑。\n可以先从快走开始，每周3到5次，每次20到30分钟，循序渐进更安全。`;
+    }
+
+    return content;
+  } catch (error) {
+    console.error("健康咨询续答错误:", error);
+    return "";
+  }
+}
+
 async function callHealthQaLLM(utterance, subIntent, { profile, memory } = {}) {
   try {
     let profileContext = "";
@@ -345,14 +547,10 @@ ${history}
 
 用户问题：${utterance}`;
 
-    const response = await fetch(API_CONFIG.endpoint, {
+    const response = await fetch(LLM_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_CONFIG.key}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: API_CONFIG.model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -468,18 +666,12 @@ ${history}
 
 请输出严格 JSON。`;
 
-    console.log('API Key:', API_CONFIG.key.substring(0, 10) + '...');
-    console.log('API Endpoint:', API_CONFIG.endpoint);
+    console.log('LLM Endpoint:', LLM_ENDPOINT);
 
-    // 发送API请求
-    const response = await fetch(API_CONFIG.endpoint, {
+    const response = await fetch(LLM_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_CONFIG.key}`
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: API_CONFIG.model,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -614,9 +806,13 @@ function secondLayerMock(utterance, ruleResult) {
       slots.bp_unit = "mmHg";
     } else if (/(吃了|服用|服了|吃药|用药|喝了(一)?(片|粒|包)?)/i.test(utterance)) {
       intent = INTENTS.MED_ADD;
-    } else if (/(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(分钟|小时)?/.test(utterance)) {
+    } else if (/(体重|重量|重)[^0-9]*(\d+(?:\.\d+)?)\s*(公斤|kg|千克|斤)/i.test(utterance)) {
+      intent = INTENTS.WEIGHT_ADD;
+    } else if (/(我想|我要|想要|打算|准备).*(锻炼|运动|快走|慢跑|跑步|散步|慢走|游泳|太极|瑜伽|广场舞|骑车)/.test(utterance)) {
+      intent = INTENTS.EXERCISE_RECOMMEND;
+    } else if (/(今天|刚刚|刚才).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(了|过|\d+\s*(分钟|分|小时))/.test(utterance)) {
       intent = INTENTS.EXERCISE_LOG;
-    } else if (/(推荐|建议|适合.*运动|做什么运动|怎么运动)/.test(utterance)) {
+    } else if (/(推荐|建议|适合.*运动|做什么运动|怎么运动|适合我的运动)/.test(utterance)) {
       intent = INTENTS.EXERCISE_RECOMMEND;
     } else if (/(这周|本周|今天|最近).*(运动|锻炼).*(几次|多少|怎么样|情况)|运动.*(统计|趋势|记录)/.test(utterance)) {
       intent = INTENTS.EXERCISE_QUERY;
@@ -1021,8 +1217,11 @@ async function saveToMemory(intent, ai, utterance) {
       }
     }
 
-    // 个人画像提取与更新
+    // 个人画像提取与更新（体重记录已在上方单独处理，避免重复写入）
     const extractedProfile = extractProfileData(ai?.llm_raw, utterance);
+    if (intent === "health_data.weight_log") {
+      extractedProfile.weight = null;
+    }
     if (shouldUpdateProfile(extractedProfile)) {
       const existingProfile = await memoryService.loadProfile();
       const mergedProfile = mergeProfileData(existingProfile, extractedProfile);
@@ -1271,6 +1470,34 @@ async function enhanceReplyWithMemory(subIntent, utterance, ai) {
       });
     };
 
+    // 个人画像查询：附加近期健康记录摘要
+    if (subIntent === "chat.profile_view") {
+      const summary = await memoryService.getHealthSummary(7);
+      extraText =
+        `\n\n近期健康记录（最近7天）：` +
+        `\n- 用药 ${summary.medicationCount} 次，血压 ${summary.bpCount} 次，血糖 ${summary.sugarCount || summary.bsCount || 0} 次` +
+        `\n- 运动 ${summary.exerciseCount} 次，饮食 ${summary.dietCount} 条`;
+      if (summary.avgSystolic && summary.avgDiastolic) {
+        extraText += `\n- 平均血压 ${summary.avgSystolic}/${summary.avgDiastolic} mmHg`;
+      }
+      if (summary.avgSugar) {
+        extraText += `\n- 平均血糖 ${summary.avgSugar} mmol/L`;
+      }
+    }
+
+    // 用药记录：返回今日用药情况
+    if (subIntent === "medication.med_log") {
+      const records = await memoryService.queryMedications(1);
+      if (records.length > 0) {
+        const recent = records.slice(-5);
+        extraText =
+          `\n\n今日用药情况：\n` +
+          recent.map((r) => `- ${formatTime(r.time)} ${r.drugName} ${r.dose?.amount || ""}${r.dose?.unit || ""}`).join("\n");
+      } else {
+        extraText = `\n\n今日用药情况：暂无记录。`;
+      }
+    }
+
     // 用药查询：返回最近记录
     if (subIntent === "medication.med_query") {
       const records = await memoryService.queryMedications(days);
@@ -1434,27 +1661,89 @@ async function assistantReply(utterance) {
     }
   }
 
+  // 健康咨询追问续答：用户补充血压/症状时，继续原咨询而非记录血压
+  let pendingQaReply = detectPendingQaReply(utterance);
+  if (!pendingQaReply) {
+    pendingQaReply = detectImplicitQaFollowUp(utterance);
+  }
+  if (pendingQaReply) {
+    const supplement = extractQaSupplement(utterance);
+    const subIntent = pendingQaReply.subIntent || "health_qa.general";
+    const text = await callHealthQaContinuation(pendingQaReply, supplement, { profile, memory });
+    MEMORY.pending.qa = null;
+
+    renderDebugJson({
+      contextContinuation: {
+        pendingQa: pendingQaReply,
+        supplement,
+        subIntent,
+      },
+    });
+
+    return {
+      text: text || "好的，我已了解您的情况。如果还有不舒服，建议及时就医并遵医嘱。",
+      debug: { pendingQa: pendingQaReply, supplement, subIntent },
+      tags: [{ text: `意图：${subIntent}（咨询续答）` }],
+    };
+  }
+
   // 第一层
   const first = runFirstLayer(utterance);
+
+  // 紧急关键词：立即响应，跳过 LLM
+  if (first.hit && first.intent === INTENTS.EMERGENCY) {
+    const subIntent = "emergency.sos";
+    const safety = { riskLevel: "URGENT", reasons: ["检测到紧急求助关键词"] };
+    if (memoryService) {
+      try {
+        await memoryService.saveEvent({
+          type: "emergency",
+          description: utterance,
+          riskLevel: "URGENT",
+        });
+      } catch (e) {
+        console.warn("[记忆] 紧急事件记录失败:", e);
+      }
+    }
+    return {
+      text: generateReply({ utterance, subIntent, slots: {}, safety, profile }),
+      triggerEmergency: true,
+      debug: { first, ai: { intent: INTENTS.EMERGENCY, subIntent }, safety },
+      tags: [{ text: "紧急求助", level: "danger" }, { text: `意图：${subIntent}` }],
+      intent: INTENTS.EMERGENCY,
+    };
+  }
+
   const pendingQueryReply = detectPendingQueryReply(utterance);
 
   // 记录类意图：当用户已经给了关键参数时，直接使用模板化“意图识别”（跳过LLM）
   // 只有明确的结构化数据记录和查询才跳过LLM，其他需要理解的请求都调用大模型
   const u = utterance ?? "";
-  const hasMedicationDose = /(\d+(?:\.\d+)?)\s*(片|粒|包|颗)/.test(u) || /(半)?\s*(一|二|两|三|四|五|六|七|八|九|十)\s*(片|粒|包|颗)/.test(u);
+  const bypassWithoutForceCheck = first.intent === "INT_MED_ADD" || first.intent === "INT_MED_MISSED";
+  const isExerciseConsultQuestion =
+    first.intent === "INT_EXERCISE_RECOMMEND" && /(吗|么|能不能|可以吗|行不行|好不好)/.test(u);
+  const isSimpleSmalltalkBypass =
+    first.intent === "INT_SMALLTALK" && isSimpleGreeting(u);
+  const isProfileSmalltalkBypass = first.hit && (isProfileViewRequest(u) || isProfileUpdateRequest(u));
   const shouldBypassLLM =
     first.hit &&
+    !isExerciseConsultQuestion &&
+    (!shouldForceLLM(u) || bypassWithoutForceCheck || isProfileSmalltalkBypass) &&
     (first.intent === "INT_BP_ADD" ||
       first.intent === "INT_BP_QUERY" ||
       first.intent === "INT_BS_QUERY" ||
+      first.intent === "INT_BS_ADD" ||
+      first.intent === "INT_WEIGHT_ADD" ||
       first.intent === "INT_EXERCISE_LOG" ||
       first.intent === "INT_EXERCISE_RECOMMEND" ||
       first.intent === "INT_MED_QUERY" ||
+      first.intent === "INT_MED_MISSED" ||
       first.intent === "INT_REMIND_QUERY" ||
       first.intent === "INT_STATS_QUERY" ||
       first.intent === "INT_EMERGENCY" ||
-      first.intent === "INT_SMALLTALK" ||
-      (first.intent === "INT_MED_ADD" && hasMedicationDose));
+      isSimpleSmalltalkBypass ||
+      isProfileSmalltalkBypass ||
+      first.intent === "INT_MED_ADD");
 
   let ai = null;
   if (pendingQueryReply) {
@@ -1516,7 +1805,18 @@ async function assistantReply(utterance) {
   // 第三层
   const safety = runSafetyCheck(utterance, ai);
 
+  if (shouldForceLLM(utterance) && (ai.intent === INTENTS.SMALLTALK || ai.intent === INTENTS.OTHER)) {
+    ai.intent = INTENTS.QA;
+  }
+
   let subIntent = mapToSubIntent({ aiIntent: ai.intent, utterance, slots: ai.slots });
+
+  if (
+    shouldForceLLM(utterance) &&
+    ["chat.greet", "chat.smalltalk", "chat.confirm", "chat.help", "chat.care", "other.unknown"].includes(subIntent)
+  ) {
+    subIntent = "health_qa.general";
+  }
 
   // 用户明确表示“已经好了/没事了”时，忽略补充追问，直接收束对话
   const recoveredRegex = /(好了|好些了|好多了|缓解了|没事了|不难受了)/;
@@ -1618,6 +1918,7 @@ async function assistantReply(utterance) {
   }
 
   if (ai.need_clarify && !isRecoveredAck) {
+    rememberPendingQa(utterance, subIntent, ai.clarify_questions);
     return {
       text: ai.clarify_questions.map((q, i) => `${i + 1}. ${q}`).join("\n"),
       debug: { first, ai, safety },
@@ -1643,10 +1944,27 @@ async function assistantReply(utterance) {
   const gender = profile?.gender;
   if (gender === "男" && /月经|例假|生理期/.test(utterance)) {
     text = "根据您的个人信息，您是男性，男性不会有月经哦。请问您还有其他健康问题需要咨询吗？";
-  } else if (isHealthQaSubIntent(subIntent)) {
-    text = await callHealthQaLLM(utterance, subIntent, { profile, memory });
+  } else if (shouldUseLLMReply(subIntent, utterance)) {
+    const qaSubIntent = isHealthQaSubIntent(subIntent) ? subIntent : "health_qa.general";
+    text = await callHealthQaLLM(utterance, qaSubIntent, { profile, memory });
+    if (!text) {
+      text = generateReply({ utterance, subIntent: qaSubIntent, slots: ai.slots, safety, profile });
+    }
+    if (shouldRememberPendingQa(text)) {
+      rememberPendingQa(utterance, qaSubIntent, []);
+    }
   } else if (!text) {
     text = generateReply({ utterance, subIntent, slots: ai.slots, safety, profile });
+  }
+
+  // 用药记录：先同步保存，再展示今日用药情况
+  let medLogSaved = false;
+  if (subIntent === "medication.med_log") {
+    const medData = extractMedicationData(ai.llm_raw, utterance);
+    if (medData.drugName) {
+      await saveToMemory(subIntent, ai, utterance);
+      medLogSaved = true;
+    }
   }
   // 提醒意图且generateReply返回null（用户已提供完整信息），不生成主回复文本
   // 实际确认消息由saveToMemory异步生成
@@ -1700,6 +2018,11 @@ async function assistantReply(utterance) {
   // 异步处理记忆相关操作，不阻塞响应
   setTimeout(async () => {
     try {
+      if (medLogSaved) return;
+      if (subIntent === "medication.med_log") {
+        const medData = extractMedicationData(ai.llm_raw, utterance);
+        if (!medData.drugName) return;
+      }
       // ====== 长期记忆：保存数据 ======
       const savedRecord = await saveToMemory(subIntent, ai, utterance);
       
@@ -2102,18 +2425,18 @@ async function sendUserMessage(text) {
       const resolvedIntent = res.intent || res.debug?.ai?.intent || null;
       const resolvedSlots = res.slots || res.debug?.ai?.slots || {};
       const resolvedLlmRaw = res.llm_raw || res.debug?.ai?.llm_raw || null;
-      if (resolvedIntent === INTENTS.SMALLTALK) {
+      if (resolvedIntent === INTENTS.SMALLTALK && !isProfileViewRequest(utterance)) {
         const updates = {};
         
         // 优先从LLM响应中提取信息
-        if (resolvedSlots && resolvedSlots.name) {
+        if (resolvedSlots?.name && !isGenderLabel(resolvedSlots.name)) {
           updates.name = resolvedSlots.name;
-        } else if (resolvedLlmRaw && resolvedLlmRaw.extractedData && resolvedLlmRaw.extractedData.name) {
+        } else if (resolvedLlmRaw?.extractedData?.name && !isGenderLabel(resolvedLlmRaw.extractedData.name)) {
           updates.name = resolvedLlmRaw.extractedData.name;
         } else {
-          // 降级：从用户输入中提取
-          const nameMatch = utterance.match(/(我叫|我的名字是|我是)(\s*)([\u4e00-\u9fa5a-zA-Z]{2,})/);
-          if (nameMatch) updates.name = nameMatch[3];
+          // 降级：从用户输入中提取（不含「我是女的」这类性别声明）
+          const nameMatch = utterance.match(/(我叫|我的名字是)(\s*)([\u4e00-\u9fa5a-zA-Z]{2,})/);
+          if (nameMatch && !isGenderLabel(nameMatch[3])) updates.name = nameMatch[3];
         }
         
         if (resolvedSlots && resolvedSlots.age) {
@@ -2141,20 +2464,28 @@ async function sendUserMessage(text) {
           }
         }
         
-        // 提取性别
-        const genderMatch = utterance.match(/(男|女|男性|女性)/);
-        if (genderMatch) updates.gender = genderMatch[1];
+        // 提取性别（仅性别相关语句）
+        if (/(我的性别是|性别是|我是男的|我是女的|我是男|我是女)/.test(utterance)) {
+          updates.gender = /女/.test(utterance) ? "女" : "男";
+        } else if (resolvedSlots?.gender) {
+          updates.gender = /女/.test(resolvedSlots.gender) ? "女" : "男";
+        } else if (resolvedLlmRaw?.extractedData?.gender) {
+          updates.gender = /女/.test(resolvedLlmRaw.extractedData.gender) ? "女" : "男";
+        }
 
         // 提取身高（cm）
         const heightMatch = utterance.match(/(?:身高(?:是)?)(\s*)(\d{2,3})(\s*)(?:cm|厘米)?/i);
         if (heightMatch) updates.heightCm = Number(heightMatch[2]);
         
         if (Object.keys(updates).length > 0 && memoryService) {
+          if (updates.gender && isGenderLabel(updates.name)) {
+            delete updates.name;
+          }
           await memoryService.updateProfile(updates);
           console.log('[记忆] 用户画像已更新:', updates);
           
-          // 个性化回复
-          if (updates.name) {
+          // 仅在用户主动报名字时替换为欢迎语
+          if (updates.name && /(我叫|我的名字是)/.test(utterance)) {
             replyText = `${updates.name}，你好！我是银发健康助手。我可以帮你记录用药、血压、血糖和体重，也可以回答你的健康问题。`;
           }
         }
@@ -2194,6 +2525,10 @@ async function sendUserMessage(text) {
           meta: `助手 · ${nowTime()}`,
           tags: res.tags,
         });
+      }
+
+      if (res.triggerEmergency && typeof window.showEmergencyModal === "function") {
+        setTimeout(() => window.showEmergencyModal(), 300);
       }
     } catch (error) {
       console.error('处理消息时出错:', error);
@@ -2268,9 +2603,49 @@ function getAlertIcon(severity) {
 
 // ==================== 天气服务 ====================
 
+const WEATHER_LOCATION_KEY = "weather_location";
+
+function getStoredWeatherLocation() {
+  return localStorage.getItem(WEATHER_LOCATION_KEY) || "";
+}
+
+function buildWeatherQuery() {
+  const location = getStoredWeatherLocation();
+  return location ? `?location=${encodeURIComponent(location)}` : "";
+}
+
+function resolveWeatherLocationByGeolocation() {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(null);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lon = pos.coords.longitude.toFixed(2);
+        const lat = pos.coords.latitude.toFixed(2);
+        resolve(`${lon},${lat}`);
+      },
+      () => resolve(null),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 }
+    );
+  });
+}
+
+async function ensureWeatherLocation() {
+  if (getStoredWeatherLocation()) return getStoredWeatherLocation();
+  const coords = await resolveWeatherLocationByGeolocation();
+  if (coords) {
+    localStorage.setItem(WEATHER_LOCATION_KEY, coords);
+    console.log("[天气] 已使用当前定位:", coords);
+  }
+  return coords;
+}
+
 async function fetchWeather() {
   try {
-    const response = await fetch(`${API_BASE}/weather/current`);
+    await ensureWeatherLocation();
+    const response = await fetch(`${API_BASE}/weather/current${buildWeatherQuery()}`);
     const result = await response.json();
     if (result.ok && result.data) {
       updateWeatherCard(result.data);
@@ -2285,7 +2660,7 @@ async function fetchWeather() {
 
 async function checkWeatherAlerts() {
   try {
-    const response = await fetch(`${API_BASE}/weather/alerts`);
+    const response = await fetch(`${API_BASE}/weather/alerts${buildWeatherQuery()}`);
     const result = await response.json();
     if (result.ok && result.data && result.data.length > 0) {
       result.data.forEach(alert => {
@@ -2321,7 +2696,13 @@ function updateWeatherCard(weather) {
   document.getElementById('weatherDesc').textContent = desc;
   document.getElementById('weatherHumidity').textContent = `${weather.humidity}%`;
   document.getElementById('weatherWind').textContent = `${weather.windDir}${weather.windScale}级`;
-  document.getElementById('weatherCity').textContent = weather.city || '当前位置';
+  const cityEl = document.getElementById('weatherCity');
+  cityEl.textContent = weather.city || '当前位置';
+  if (weather.source === 'simulated') {
+    cityEl.title = '当前为演示天气数据，请配置和风天气 API';
+  } else {
+    cityEl.title = '数据来源：和风天气';
+  }
 
   card.style.display = 'flex';
 }
@@ -2356,13 +2737,19 @@ function updateWeatherModal(weather) {
 
 async function loadWeatherAdvisory() {
   try {
-    const response = await fetch(`${API_BASE}/weather/advisory`);
+    const response = await fetch(`${API_BASE}/weather/advisory${buildWeatherQuery()}`);
     const result = await response.json();
     if (result.ok && result.data) {
       const advisory = result.data;
       
       // 更新活动建议
       document.getElementById('weatherRecommendation').textContent = advisory.recommendation || '暂无活动建议';
+
+      // 更新穿衣建议
+      const clothingEl = document.getElementById('weatherClothingAdvice');
+      if (clothingEl) {
+        clothingEl.textContent = advisory.clothingAdvice || '暂无穿衣建议';
+      }
       
       // 更新健康建议列表
       const list = document.getElementById('weatherAdvisoryList');
@@ -2371,13 +2758,13 @@ async function loadWeatherAdvisory() {
           `<div class="weather-advisory-item">${item}</div>`
         ).join('');
       } else {
-        list.innerHTML = '<p style="color: var(--text-muted); text-align: center;">今日天气良好，无需特别注意</p>';
+        list.innerHTML = '<div class="weather-advisory-item weather-advisory-item--empty">💚 今日天气整体平稳，请按时吃药、适量饮水</div>';
       }
     }
   } catch (e) {
     console.error("[天气] 获取健康建议失败:", e);
-    document.getElementById('weatherAdvisoryList').innerHTML = 
-      '<p style="color: var(--text-muted); text-align: center;">获取健康建议失败</p>';
+    document.getElementById('weatherAdvisoryList').innerHTML =
+      '<div class="weather-advisory-item weather-advisory-item--empty">获取健康建议失败，请稍后再试</div>';
   }
 }
 

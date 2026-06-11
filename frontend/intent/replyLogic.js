@@ -159,8 +159,8 @@ function extractWeightValue(text) {
   let m = u.match(/(?:体重|重)[^0-9]*(\d+(?:\.\d+)?)\s*(公斤|kg|千克)/i) || u.match(/(\d+(?:\.\d+)?)\s*(公斤|kg|千克)/i);
   if (m) return Number(m[1]);
   
-  // 再尝试匹配斤，转换为公斤
-  m = u.match(/(?:体重|重)[^0-9]*(\d+(?:\.\d+)?)\s*斤/i) || u.match(/(\d+(?:\.\d+)?)\s*斤/i);
+  // 再尝试匹配斤（排除公斤、千克），转换为公斤
+  m = u.match(/(?:体重|重)[^0-9]*(\d+(?:\.\d+)?)\s*(?<![公千])斤/i) || u.match(/(\d+(?:\.\d+)?)\s*(?<![公千])斤/i);
   if (m) {
     const jinValue = Number(m[1]);
     return Math.round(jinValue / 2);
@@ -171,6 +171,11 @@ function extractWeightValue(text) {
 
 export function mapToSubIntent({ aiIntent, utterance }) {
   const u = (utterance ?? "").trim();
+
+  // 紧急求助（优先于一切）
+  if (aiIntent === "INT_EMERGENCY" || /^(救命|急救)$|拨打\s*120/.test(u)) {
+    return "emergency.sos";
+  }
 
   // 优先处理“状态恢复/结束会话”语义，避免被误判为继续追问
   if (/(好了|好些了|好多了|缓解了|没事了|不难受了)/.test(u) && /(谢谢|感谢)?/.test(u)) {
@@ -190,6 +195,27 @@ export function mapToSubIntent({ aiIntent, utterance }) {
     return "medication.med_consult";
   }
 
+  // 漏服/忘服：给出补服建议，不走通用健康问答
+  if (aiIntent === "INT_MED_MISSED") return "medication.missed_dose";
+  if (/(忘记|漏服|忘吃|没吃药|没服药|未服药).*(药|服药|用药)/.test(u)) {
+    return "medication.missed_dose";
+  }
+
+  // 查看个人画像：不依赖 LLM 意图，避免被误判为问候
+  if (/(查看个人画像|我的画像|个人画像|查看画像|我要看我的个人画像|我就要看我的个人画像|给我看个人画像|显示个人画像)/.test(u)) {
+    return "chat.profile_view";
+  }
+
+  // 性别/画像信息更新
+  if (/(我的性别是|性别是|我是男的|我是女的|我是男|我是女)/.test(u)) {
+    return "chat.profile";
+  }
+
+  // 真实问题优先走健康咨询，避免误判为寒暄
+  if (/(怎么办|能不能|为什么|如何|该怎么)/.test(u)) return "health_qa.general";
+  if (/(老了|不中用|没用|年纪大|走不动|不被需要)/.test(u)) return "health_qa.general";
+  if (/(你能帮|帮我做什么|你会什么|有什么功能|可以帮我)/.test(u)) return "health_qa.general";
+
   // 健康咨询细分
   if (aiIntent === "INT_QA_HEALTH") {
     if (/(能不能吃|可以吃吗|不能吃|吃什么|饮食|盐|咸|油|糖)/.test(u)) return "health_qa.diet";
@@ -202,6 +228,10 @@ export function mapToSubIntent({ aiIntent, utterance }) {
   if (aiIntent === "INT_MED_QUERY") return "medication.med_query";
   if (aiIntent === "INT_BP_QUERY") return "health_data.bp_query";
   if (aiIntent === "INT_BS_QUERY") return "health_data.bs_query";
+  // 「我想快走锻炼」等表达意愿，给运动建议而非记录
+  if (/(我想|我要|想要|打算|准备).*(锻炼|运动|快走|慢跑|跑步|散步|慢走|游泳|太极|瑜伽|广场舞|骑车)/.test(u)) {
+    return "exercise.recommend";
+  }
   if (aiIntent === "INT_EXERCISE_LOG") return "exercise.log";
   if (aiIntent === "INT_EXERCISE_QUERY") return "exercise.query";
   if (aiIntent === "INT_EXERCISE_RECOMMEND") return "exercise.recommend";
@@ -209,6 +239,11 @@ export function mapToSubIntent({ aiIntent, utterance }) {
   if (aiIntent === "INT_DIET_QUERY") return "diet.query";
   if (aiIntent === "INT_DIET_SUGGEST") return "diet.suggest";
   if (aiIntent === "INT_STATS_QUERY") return "stats.query";
+
+  // 体重记录：不依赖 LLM 意图，避免被误判为闲聊
+  if (/(体重|重量|重)[^0-9]*(\d+(?:\.\d+)?)\s*(公斤|kg|千克|斤)?/i.test(u) && !/(查询|查看|多少|怎么样|趋势)/.test(u)) {
+    return "health_data.weight_log";
+  }
 
   // 记录细分
   if (aiIntent === "INT_MED_ADD") return "medication.med_log";
@@ -225,13 +260,16 @@ export function mapToSubIntent({ aiIntent, utterance }) {
   // 闲聊/关怀/帮助（尽量细分）
   if (aiIntent === "INT_SMALLTALK") {
     if (/(查看个人画像|我的画像|个人画像|查看画像|我要看我的个人画像|我就要看我的个人画像|给我看个人画像|显示个人画像)/.test(u)) return "chat.profile_view";
-    if (/(我的身高是|我的体重是|我今年\d{1,3}岁|我\d{1,3}岁|几岁了|今年几岁|过敏|过敏史|有.*病|患有|得了)/.test(u)) return "chat.profile";
+    if (/(我的身高是|我的体重是|我的性别是|性别是|我是男的|我是女的|我是男|我是女|我今年\d{1,3}岁|我\d{1,3}岁|几岁了|今年几岁|过敏|过敏史|有.*病|患有|得了)/.test(u)) return "chat.profile";
     if (/(不用了|不需要|不要了|先不了|算了)/.test(u) && /(谢谢|感谢)/.test(u)) return "chat.confirm";
     if (/^(不用了|不需要|不要了|先不了|算了)$/.test(u)) return "chat.confirm";
     if (/^(谢谢|好的|收到|嗯|嗯嗯)$/.test(u)) return "chat.confirm";
     if (/^(再见|拜拜)$/.test(u)) return "chat.goodbye";
-    if (/(心情不好|难受|害怕|焦虑|孤单|想哭|没人陪|睡不着|很闷|闷得慌|无聊|一个人在家|一个人|伤心|难过|恐惧|心烦|烦躁|低落|消沉|沮丧|想念|怀念|失眠|想不开|活不下去|不想活|郁闷|坐立不安|流泪|眼泪|慌)/.test(u)) return "chat.care";
-    if (/(怎么用|不会用|你能做什么|帮助|操作指南)/.test(u)) return "chat.help";
+    if (/(心情不好|难受|害怕|焦虑|孤单|想哭|没人陪|睡不着|很闷|闷得慌|无聊|一个人在家|一个人|伤心|难过|恐惧|心烦|烦躁|低落|消沉|沮丧|想念|怀念|失眠|想不开|活不下去|不想活|郁闷|坐立不安|流泪|眼泪|慌)/.test(u)) {
+      if (/(怎么办|为什么|如何|能不能|可以吗|[吗么？?]$)/.test(u)) return "health_qa.general";
+      return "chat.care";
+    }
+    if (/(怎么用|不会用|你能做什么|你能帮|帮我做什么|你会什么|有什么功能|帮助|操作指南)/.test(u)) return "chat.help";
     if (/(天气|阳光|下雨|阴天|风大|凉快|热|冷|今天真好|适合出去|天气好|出太阳|晴)/.test(u)) return "chat.smalltalk";
     if (/(哈哈|呵呵|随便聊|聊聊天)/.test(u)) return "chat.smalltalk";
     return "chat.greet";
@@ -273,7 +311,6 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
   switch (subIntent) {
     // 用药记录
     case "medication.med_log":
-      // 如果用户已经说了“吃一片/吃了1片”，就不要再追问吃几片了
       {
         let amount = slots?.dose?.amount;
         let unit = slots?.dose?.unit;
@@ -291,9 +328,7 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
             warnTail;
         }
 
-        return `好的，已帮您记录${timeHint ? `“${timeHint}”` : "今天"}的${drugName || "[药名]"}。` +
-          `\n请再告诉我：吃了多少（例如 1片/1粒）？` +
-          warnTail;
+        return `好的，已帮您记录${timeHint ? `“${timeHint}”` : "今天"}的${drugName || "[药名]"}。` + warnTail;
       }
 
     // 用药查询
@@ -305,9 +340,16 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
       return "好的。我可以帮您查用药记录。\n你想查“今天”、还是“最近一周/一个月”的用药？";
     }
 
-    // 漏服处理（当作咨询）
+    // 漏服处理：给出通用补服原则
     case "medication.missed_dose":
-      return "我明白了。一般不建议自行加倍补吃。\n请告诉我：是什么药？漏了多久？现在有没有不舒服？我再帮您给出更安全的建议。";
+      return (
+        "关于漏服药物，一般可按以下原则处理（仅供参考，具体请遵医嘱）：\n\n" +
+        "✅ 刚想起来（距平时服药时间不超过约2小时）：通常可以补服一次。\n" +
+        "⏭️ 已接近下次服药时间（不足4小时）：跳过这次，按原时间吃下一顿，不要加倍补服。\n" +
+        "🌙 一天只吃一次的药：当天不要再补，明天按时服用即可。\n\n" +
+        "⚠️ 如出现头晕、胸闷等不适，或不确定怎么处理，请及时联系医生或药师。" +
+        warnTail
+      );
 
     // 用药咨询
     case "medication.med_consult":
@@ -401,6 +443,39 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
       const recommendations = [];
       
       // 针对特定运动的问题给出明确回答
+      if (/快走/.test(u)) {
+        if (hasHypertension) {
+          return (
+            "好的！快走很适合您，对控制血压也有帮助。\n\n" +
+            "✅ 快走建议：\n" +
+            "• 速度：比平常走路稍快，能说话、不太喘为宜\n" +
+            "• 时长：每次20-30分钟，可分早晚两次\n" +
+            "• 频率：每周3-5次，循序渐进\n" +
+            "• 运动前热身5分钟，运动后拉伸放松\n\n" +
+            "💡 您有高血压，快走比跑步更安全；如感到头晕、胸闷，请立即停下休息。"
+          );
+        }
+        if (hasKneeIssue) {
+          return (
+            "好的！快走是较温和的有氧运动。\n\n" +
+            "✅ 快走建议：\n" +
+            "• 选择平坦路面，穿防滑舒适的鞋\n" +
+            "• 每次15-20分钟起步，逐步增加到30分钟\n" +
+            "• 步幅适中，膝盖微弯，避免硬地猛走\n\n" +
+            "⚠️ 您有关节不适，如膝盖酸胀请缩短时间或改选游泳、太极。"
+          );
+        }
+        return (
+          "好的！快走是很好的锻炼方式。\n\n" +
+          "✅ 快走建议：\n" +
+          "• 速度：比平常走路稍快，微微出汗、能正常说话\n" +
+          "• 时长：每次20-30分钟，每周3-5次\n" +
+          "• 姿势：抬头挺胸，自然摆臂，落地先脚跟后脚掌\n" +
+          "• 运动前简单热身，结束后拉伸小腿和大腿\n\n" +
+          "💡 从10-15分钟开始，适应后再慢慢加时。"
+        );
+      }
+
       if (/快跑|跑步/.test(u) && hasHypertension) {
         return "⚠️ 根据您有高血压的情况，**不建议快跑**。快跑会使心率加快、血压骤升，增加心脏负担。\n\n✅ 推荐运动：\n• 散步（每天30分钟，分两次进行）\n• 太极拳（动作缓慢，有助于放松）\n• 八段锦（传统养生运动）\n\n💡 小贴士：运动时保持呼吸平稳，感觉有点累但还能说话的强度最合适。";
       }
@@ -453,6 +528,16 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
     }
     case "stats.query":
       return "好的，我可以给您看统计数据。\n您想看今日、本周还是本月的运动和饮食总结？";
+
+    // 紧急求助
+    case "emergency.sos":
+      return (
+        "🚨 收到您的紧急求助！我已为您启动紧急协助。\n\n" +
+        "请优先选择：\n" +
+        "• 立即拨打 120 急救电话\n" +
+        "• 或联系您的紧急联系人/家人\n\n" +
+        "请尽量保持冷静。若方便，请告诉我您现在哪里不舒服，我会继续协助您。"
+      );
 
     // 健康咨询（饮食/用药/症状）
     case "health_qa.diet":
@@ -566,8 +651,16 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
       return ["好的，祝您平安健康。需要时随时找我。", "嗯，您好好休息。我随时都在，有需要再叫我。", "再见啦，保重身体！明天见。"][Math.floor(Math.random() * 3)];
     case "chat.help":
       return "我可以帮您：记录用药、记录血压/血糖/体重、查询记录、做健康咨询。\n例如你可以说：「我晚上吃了布洛芬」「血压140/90」「空腹血糖6.5」「今天血压怎么样」。";
-    case "chat.profile":
+    case "chat.profile": {
+      if (/(我的性别是|性别是|我是男的|我是女的|我是男|我是女)/.test(u)) {
+        const g = /女/.test(u) ? "女" : "男";
+        return `好的，我已记下您的性别：${g}。`;
+      }
+      if (/我叫/.test(u)) {
+        return "收到，我已记下您的姓名。\n如果你愿意，也可以继续告诉我年龄、慢性病史或常用药，我能给你更贴合的健康提醒。";
+      }
       return "收到，我已记下这条个人信息。\n如果你愿意，也可以继续告诉我年龄、慢性病史或常用药，我能给你更贴合的健康提醒。";
+    }
     case "chat.profile_view": {
       if (!profile) return "您还没有提供任何个人信息呢。";
       let info = "您的个人画像信息：\n\n";

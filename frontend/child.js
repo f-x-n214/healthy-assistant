@@ -1,6 +1,6 @@
 import { applyFontSize } from './utils.js';
 
-const API_BASE = 'http://localhost:5001/api';
+import { API_BASE } from './config.js';
 const CURRENT_CHILD_ID = "default_child";
 
 let chartInstance = null;
@@ -302,15 +302,6 @@ function renderRecordsList(type, records) {
   el.innerHTML = html;
 }
 
-async function loadParentProfile(parent) {
-  const profile = parent.profile || {};
-  const name = parent.child_label || profile.name || '父母';
-  const age = profile.age ? `${profile.age}岁` : '';
-  const conditions = profile.conditions || profile.chronicDiseases || [];
-  const condStr = conditions.length > 0 ? conditions.join('、') : '';
-  document.getElementById('parentSubtitle').textContent = `查看${name}的健康数据${age ? ' - ' + age : ''}${condStr ? ' | ' + condStr : ''}`;
-}
-
 function updateUrgentBanner() {
   const banner = document.getElementById('urgentBanner');
   banner.innerHTML = '';
@@ -524,7 +515,6 @@ async function loadBoundParents() {
 function selectParent(parentId, parent) {
   selectedParentId = parentId;
   loadBoundParents();
-  loadParentProfile(parent);
   loadKeyStats();
   loadDetailData(currentTab);
   generateAdvice();

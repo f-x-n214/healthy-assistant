@@ -324,7 +324,7 @@
     </div>
 
     <script type="module">
-      const API_BASE = "http://localhost:5001/api";
+      import { API_BASE } from '../config.js';
       
       // 从 URL 参数获取父母 ID
       const urlParams = new URLSearchParams(window.location.search);

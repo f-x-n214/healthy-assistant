@@ -126,9 +126,27 @@ export const FIRST_LAYER = {
       example: "「看一下我的血糖记录」→ INT_BS_QUERY",
     },
     {
+      id: "weight_log",
+      intent: "INT_WEIGHT_ADD",
+      pattern: "(体重|重量|重)(?!.*(查询|查看|多少|怎么样|趋势))[^0-9]*(\\d+(?:\\.\\d+)?)\\s*(公斤|kg|千克|斤)?",
+      flags: "i",
+      handling: "路由执行（记录体重）",
+      example: "「体重70公斤」→ INT_WEIGHT_ADD",
+    },
+    {
+      id: "exercise_recommend_intent",
+      intent: "INT_EXERCISE_RECOMMEND",
+      pattern:
+        "(我想|我要|想要|打算|准备).*(锻炼|运动|快走|慢跑|跑步|散步|慢走|游泳|太极|瑜伽|广场舞|骑车)|推荐.*适合.*(我的)?运动|适合我的运动",
+      flags: "i",
+      handling: "路由执行（运动建议/个性化推荐）",
+      example: "「我想快走锻炼」「推荐适合我的运动」→ INT_EXERCISE_RECOMMEND",
+    },
+    {
       id: "exercise_log",
       intent: "INT_EXERCISE_LOG",
-      pattern: "(今天|刚刚|我).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(\\d+\\s*(分钟|分|小时))?",
+      pattern:
+        "(今天|刚刚|刚才|早上|晚上|中午).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(了|过).*(\\d+\\s*(分钟|分|小时))?|(今天|刚刚|刚才).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(\\d+\\s*(分钟|分|小时))",
       flags: "i",
       handling: "路由执行（记录运动）",
       example: "「我今天散步了30分钟」→ INT_EXERCISE_LOG",
@@ -152,7 +170,7 @@ export const FIRST_LAYER = {
     {
       id: "exercise_recommend",
       intent: "INT_EXERCISE_RECOMMEND",
-      pattern: "(推荐.*运动|建议.*运动|做什么运动|适合.*运动|怎么运动|能做什么运动|运动推荐|(高血压|糖尿病|膝盖).*能.*运动|(快跑|慢跑|跑步|游泳|太极|散步).*(可以|能|适合|减肥))",
+      pattern: "(推荐.*运动|建议.*运动|做什么运动|适合.*运动|怎么运动|能做什么运动|运动推荐|(高血压|糖尿病|膝盖).*(能|可以).*(运动|跑|走|游泳)|(快跑|慢跑|跑步|游泳|太极|散步|快走).*(可以|能|适合|减肥)|(可以|能).{0,4}(快跑|慢跑|跑步|游泳|太极|散步|快走))",
       flags: "i",
       handling: "路由执行（运动推荐）",
       example: "「膝盖不好推荐什么运动」「高血压能快跑吗」「我想快跑减肥」→ INT_EXERCISE_RECOMMEND",
@@ -222,6 +240,15 @@ export const FIRST_LAYER = {
       example: "「今天吃药了吗」→ INT_MED_QUERY",
     },
     {
+      id: "med_missed_dose",
+      intent: "INT_MED_MISSED",
+      pattern:
+        "(忘记|漏|未|没).{0,6}(吃|服).{0,6}(药|服药|用药)|(忘吃|漏服|没吃药|没服药|忘记吃药|忘记服药).*(怎么办|如何|该|要)?",
+      flags: "i",
+      handling: "路由执行（漏服补服指导）",
+      example: "「我忘记吃药了怎么办」→ INT_MED_MISSED",
+    },
+    {
       id: "greet_polite",
       intent: "INT_SMALLTALK",
       // 解决：用户说「晚上好」未命中
@@ -239,9 +266,17 @@ export const FIRST_LAYER = {
       example: "「查看个人画像」「我要看我的个人画像」→ INT_SMALLTALK（查看个人画像）",
     },
     {
+      id: "profile_gender",
+      intent: "INT_SMALLTALK",
+      pattern: "(我是男的|我是女的|我是男|我是女|我是大爷|我是阿姨|我的性别是|性别是)",
+      flags: "i",
+      handling: "路由执行（提取性别）",
+      example: "「我是女的」「我的性别是女的」→ INT_SMALLTALK（提取性别）",
+    },
+    {
       id: "introduce",
       intent: "INT_SMALLTALK",
-      pattern: "^(我是|我叫)[\\u4e00-\\u9fa5]{2,4}$|^我今年\\d{1,3}岁$|^我\\d{1,3}岁$",
+      pattern: "^(我是|我叫)(?!男的|女的|男生|女生|男性|女性)[\\u4e00-\\u9fa5]{2,4}$|^我今年\\d{1,3}岁$|^我\\d{1,3}岁$",
       flags: "i",
       handling: "直接返回（自我介绍）",
       example: "「我叫张三」「我今年65岁」→ INT_SMALLTALK",
@@ -249,7 +284,7 @@ export const FIRST_LAYER = {
     {
       id: "profile_info",
       intent: "INT_SMALLTALK",
-      pattern: "(我的身高是|我的体重是|我今年\\d{1,3}岁|我\\d{1,3}岁|几岁了|今年几岁)",
+      pattern: "(我的身高是|我的体重是|我的性别是|我今年\\d{1,3}岁|我\\d{1,3}岁|几岁了|今年几岁)",
       flags: "i",
       handling: "路由执行（提取用户画像）",
       example: "「我的身高是168」→ INT_SMALLTALK（用户画像信息）",
@@ -257,18 +292,10 @@ export const FIRST_LAYER = {
     {
       id: "profile_name",
       intent: "INT_SMALLTALK",
-      pattern: "(我叫|我是|姓名|名字是|我姓)[\\u4e00-\\u9fa5]{2,4}",
+      pattern: "(我叫|姓名|名字是|我姓)(?!男的|女的|男生|女生)[\\u4e00-\\u9fa5]{2,4}",
       flags: "i",
       handling: "路由执行（提取姓名）",
       example: "「我叫王大爷」→ INT_SMALLTALK（提取姓名）",
-    },
-    {
-      id: "profile_gender",
-      intent: "INT_SMALLTALK",
-      pattern: "(我是男|我是女|我是大爷|我是阿姨)",
-      flags: "i",
-      handling: "路由执行（提取性别）",
-      example: "「我是大爷」→ INT_SMALLTALK（提取性别男）",
     },
     {
       id: "profile_disease",

@@ -331,6 +331,8 @@ function makePhoneCall(phone, name) {
 
 // 页面加载
 document.addEventListener('DOMContentLoaded', async () => {
+  // 进入健康档案页时刷新记录缓存，确保刚录入的数据能显示
+  memoryService.cache.invalidateByType('records');
   loadKeyStats();
   loadDetailData(currentTab);
 

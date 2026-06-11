@@ -11,6 +11,39 @@
       "time": "2026-06-09T07:30:13.511Z",
       "source": "regex",
       "createdAt": "2026-06-09T15:30:14.072427"
+    },
+    {
+      "id": "exercise_20260610_203548_678e",
+      "action": "跑步",
+      "duration": null,
+      "durationUnit": "分钟",
+      "intensity": "",
+      "feeling": "",
+      "time": "2026-06-10T12:35:48.169Z",
+      "source": "regex",
+      "createdAt": "2026-06-10T20:35:48.484378"
+    },
+    {
+      "id": "exercise_20260610_203605_1eca",
+      "action": "跑步",
+      "duration": null,
+      "durationUnit": "分钟",
+      "intensity": "",
+      "feeling": "",
+      "time": "2026-06-10T12:36:04.931Z",
+      "source": "regex",
+      "createdAt": "2026-06-10T20:36:05.245692"
+    },
+    {
+      "id": "exercise_20260610_232152_726e",
+      "action": "快走",
+      "duration": null,
+      "durationUnit": "分钟",
+      "intensity": "",
+      "feeling": "",
+      "time": "2026-06-10T15:21:51.526Z",
+      "source": "regex",
+      "createdAt": "2026-06-10T23:21:52.092393"
     }
   ],
   "statistics": {}

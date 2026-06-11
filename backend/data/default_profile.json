@@ -2,7 +2,7 @@
   "userId": "default",
   "name": "小花",
   "age": 65,
-  "gender": "男",
+  "gender": "女",
   "phone": "",
   "chronicDiseases": [
     "高血压",
@@ -21,8 +21,8 @@
   "behaviorStage": "新手期",
   "trustLevel": "低",
   "createdAt": "2026-04-29T16:09:51.483957",
-  "updatedAt": "2026-06-09T16:28:29.768280",
-  "weight": 70.1,
+  "updatedAt": "2026-06-10T23:47:05.189466",
+  "weight": 70,
   "heightCm": 170,
   "height": 170
 }

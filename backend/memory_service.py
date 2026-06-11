@@ -180,7 +180,7 @@ class MemoryStore:
 
     def query_records(self, user_id, record_type, days=7):
         # 体重记录类型别名（支持 wt 和 weight 两种）
-        type_mapping = {"weight": ["weight", "wt"]}
+        type_mapping = {"weight": ["weight", "wt"], "wt": ["weight", "wt"]}
         search_types = type_mapping.get(record_type, [record_type])
         
         # 如果是查询今天的记录，从凌晨0点开始

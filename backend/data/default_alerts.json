@@ -523,5 +523,100 @@
       "text": "还感觉头晕恶心"
     },
     "source": "text_detection"
+  },
+  {
+    "id": "alert_1781094869534_im2l0t",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：145/92 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-06-10T12:34:28.557Z",
+    "data": {
+      "systolic": 145,
+      "diastolic": 92
+    }
+  },
+  {
+    "id": "alert_1781098433135_axanho",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：147/98 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-06-10T13:33:52.116Z",
+    "data": {
+      "systolic": 147,
+      "diastolic": 98
+    }
+  },
+  {
+    "id": "alert_1781098892047_i56j7u",
+    "type": "symptom.bleeding",
+    "title": "出血问题",
+    "message": "检测到出血相关症状，请立即就医！",
+    "severity": "URGENT",
+    "time": 1781098892047,
+    "data": {
+      "text": "而且我还吐了好多血。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1781098892047_t573b1",
+    "type": "symptom.vomiting_blood",
+    "title": "呕血紧急",
+    "message": "检测到呕吐伴随出血，这是消化道出血的紧急征兆，请立即拨打120急救电话！",
+    "severity": "URGENT",
+    "time": 1781098892047,
+    "data": {
+      "text": "而且我还吐了好多血。"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1781098944513_ylmjqi",
+    "type": "behavior.self_harm",
+    "title": "自伤风险",
+    "message": "检测到自伤风险倾向，请立即联系家人或心理援助热线！",
+    "severity": "BLOCK",
+    "time": 1781098944513,
+    "data": {
+      "text": "我想自杀怎么办？"
+    },
+    "source": "text_detection"
+  },
+  {
+    "id": "alert_1781104251914_qkmkvx",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：144/92 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-06-10T15:10:49.419Z",
+    "data": {
+      "systolic": 144,
+      "diastolic": 92
+    }
+  },
+  {
+    "id": "alert_1781104826519_tr867k",
+    "type": "medication.missed",
+    "title": "用药依从性提醒",
+    "message": "最近7天内仅在2天服药，请注意按时服药！",
+    "severity": "WARN",
+    "time": 1781104826519,
+    "data": {
+      "daysCount": 2
+    }
+  },
+  {
+    "id": "alert_1781105472361_tz0jd9",
+    "type": "symptom.heart",
+    "title": "心脏问题",
+    "message": "检测到心脏相关症状：胸痛、胸闷、心慌等，请立即联系医生或就医！",
+    "severity": "URGENT",
+    "time": 1781105472360,
+    "data": {
+      "text": "我胸口痛"
+    },
+    "source": "text_detection"
   }
 ]
