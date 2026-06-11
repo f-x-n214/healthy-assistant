@@ -84,5 +84,21 @@
     "city": "黄埔",
     "locationId": "101280111",
     "source": "qweather"
+  },
+  "2026-06-11": {
+    "temp": "29",
+    "feelsLike": "30",
+    "weather": "阴",
+    "windDir": "东风",
+    "windScale": "3",
+    "humidity": "62",
+    "visibility": "30",
+    "uvIndex": "2",
+    "precip": "0.0",
+    "pressure": "1002",
+    "updateTime": "2026-06-11T16:02+08:00",
+    "city": "黄埔",
+    "locationId": "101280111",
+    "source": "qweather"
   }
 }

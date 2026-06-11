@@ -618,5 +618,17 @@
       "text": "我胸口痛"
     },
     "source": "text_detection"
+  },
+  {
+    "id": "alert_1781165458378_bd8lut",
+    "type": "health.bp_high",
+    "title": "血压偏高",
+    "message": "血压偏高：147/98 mmHg，请注意休息，避免情绪激动。",
+    "severity": "WARN",
+    "time": "2026-06-11T08:10:55.609Z",
+    "data": {
+      "systolic": 147,
+      "diastolic": 98
+    }
   }
 ]

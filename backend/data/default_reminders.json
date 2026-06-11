@@ -249,6 +249,16 @@
       "enabled": false,
       "message": "",
       "createdAt": "2026-06-08T16:44:09.142524"
+    },
+    {
+      "id": "remind_20260611_161314_1ba4",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "17:00",
+      "frequency": "once",
+      "enabled": false,
+      "message": "",
+      "createdAt": "2026-06-11T16:13:14.051422"
     }
   ],
   "userId": "default"

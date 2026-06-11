@@ -285,6 +285,24 @@
       "message": "小花，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
       "triggeredAt": "2026-06-09T17:00:54.538683",
       "needConfirm": true
+    },
+    {
+      "reminderId": "remind_20260528_084148_936e",
+      "type": "activity",
+      "drugName": "",
+      "time": "17:00",
+      "message": "小花，傍晚散步时间到了",
+      "triggeredAt": "2026-06-11T17:00:21.395308",
+      "needConfirm": false
+    },
+    {
+      "reminderId": "remind_20260611_161314_1ba4",
+      "type": "medication",
+      "drugName": "降压药",
+      "time": "17:00",
+      "message": "小花，该吃降压药了！您吃药了吗？请回复'吃了'或'没吃'。",
+      "triggeredAt": "2026-06-11T17:00:21.400915",
+      "needConfirm": true
     }
   ],
   "confirmed": [
