@@ -642,16 +642,19 @@ def serve_frontend(filepath):
         return jsonify({"ok": False, "error": "not found"}), 404
 
     safe_path = os.path.normpath(filepath)
-    if safe_path.startswith(".."):
+    if safe_path.startswith("..") or os.path.isabs(safe_path):
         return jsonify({"ok": False, "error": "forbidden"}), 403
 
     file_on_disk = os.path.join(FRONTEND_DIR, safe_path)
+    # Flask send_from_directory 在 Windows 上需要正斜杠路径
+    serve_path = safe_path.replace("\\", "/")
+
     if os.path.isfile(file_on_disk):
-        return send_from_directory(FRONTEND_DIR, safe_path)
+        return send_from_directory(FRONTEND_DIR, serve_path)
 
     html_path = file_on_disk + ".html"
     if os.path.isfile(html_path):
-        return send_from_directory(FRONTEND_DIR, safe_path + ".html")
+        return send_from_directory(FRONTEND_DIR, serve_path + ".html")
 
     return send_from_directory(FRONTEND_DIR, "index.html")
 

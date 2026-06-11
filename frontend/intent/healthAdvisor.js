@@ -198,3 +198,134 @@ export function extractFoodsFromText(text) {
   
   return foundFoods;
 }
+
+function normalizeDiseases(diseases) {
+  return (diseases || []).map((d) => {
+    if (/糖尿病|高血糖/.test(d)) return "2型糖尿病";
+    return d;
+  });
+}
+
+/**
+ * 根据运动记录生成个性化建议
+ */
+export function getExerciseAdviceFromRecords(records, { days = 7, profile } = {}) {
+  const list = records || [];
+  const count = list.length;
+  let totalMinutes = 0;
+  let withDuration = 0;
+  list.forEach((r) => {
+    if (r.duration) {
+      withDuration++;
+      totalMinutes += r.durationUnit === "小时" ? r.duration * 60 : r.duration;
+    }
+  });
+
+  const diseases = profile?.chronicDiseases || [];
+  const hasHypertension = diseases.some((d) => /高血压/.test(d));
+  const hasDiabetes = diseases.some((d) => /糖尿病|高血糖/.test(d));
+  const hasKneeIssue = diseases.some((d) => /关节|膝盖/.test(d));
+  const rangeText = days === 1 ? "今天" : days === 7 ? "本周" : days === 30 ? "本月" : `最近${days}天`;
+
+  if (count === 0) {
+    let tip = "建议每周运动3～5次，每次20～30分钟，可从散步、太极拳等温和运动开始。";
+    if (hasHypertension) tip = "您有高血压，建议每天散步20～30分钟，分早晚两次，对控制血压很有帮助。";
+    else if (hasDiabetes) tip = "您有糖尿病，建议餐后散步15～20分钟，有助于平稳血糖。";
+    else if (hasKneeIssue) tip = "有关节不适，建议选游泳、太极等低冲击运动，避免爬山和深蹲。";
+    return `\n\n【建议】${tip}\n说「今天散步了30分钟」即可帮您记录。`;
+  }
+
+  const lines = ["\n\n【建议】"];
+
+  if (totalMinutes > 0) {
+    const target = days === 7 ? 150 : days === 30 ? 600 : days === 1 ? 20 : Math.round(150 * days / 7);
+    if (totalMinutes >= target) {
+      lines.push(`${rangeText}累计运动约${totalMinutes}分钟，运动量不错，请继续保持！`);
+    } else if (totalMinutes >= target * 0.6) {
+      lines.push(`${rangeText}累计约${totalMinutes}分钟，接近推荐量。可逐步增至${days === 7 ? "每周150分钟" : "每天20～30分钟"}左右。`);
+    } else {
+      lines.push(`${rangeText}累计约${totalMinutes}分钟，偏少。建议逐步增加，${days === 7 ? "每周至少150分钟" : "每天20～30分钟"}中等强度活动。`);
+    }
+  } else {
+    lines.push("记录中缺少运动时长，下次可说「散步30分钟」，方便帮您统计和给出更准建议。");
+  }
+
+  const minFreq = days === 7 ? 3 : days === 30 ? 12 : 1;
+  if (count < minFreq) {
+    lines.push(`${rangeText}运动${count}次，频率偏低，建议每周至少3～5次，养成习惯。`);
+  }
+
+  if (hasHypertension) {
+    lines.push("💡 您有高血压：优选散步、太极等温和有氧，避免憋气和剧烈运动，运动后注意监测血压。");
+  } else if (hasDiabetes) {
+    lines.push("💡 您有糖尿病：餐后1小时散步最佳，运动前不宜空腹，穿舒适鞋子，随身带颗糖防低血糖。");
+  } else if (hasKneeIssue) {
+    lines.push("💡 有关节不适：避免爬山、久蹲，可选游泳、骑固定单车等低冲击运动。");
+  } else {
+    lines.push("💡 运动前简单热身5分钟，结束后拉伸放松；如感到胸闷、头晕，请立即停止休息。");
+  }
+
+  return lines.join("\n");
+}
+
+/**
+ * 根据饮食记录生成个性化建议
+ */
+export function getDietAdviceFromRecords(records, { days = 7, profile } = {}) {
+  const list = records || [];
+  const count = list.length;
+  const rangeText = days === 1 ? "今天" : days === 7 ? "本周" : days === 30 ? "本月" : `最近${days}天`;
+
+  if (count === 0) {
+    return `\n\n【建议】均衡饮食对健康管理很重要。建议每餐有蔬菜、适量主食和优质蛋白，少盐少油。\n说「中午吃了米饭和青菜」即可帮您记录。`;
+  }
+
+  const allFoods = [];
+  let missingFoodDetail = 0;
+  list.forEach((r) => {
+    if (Array.isArray(r.foods) && r.foods.length > 0) allFoods.push(...r.foods);
+    else missingFoodDetail++;
+  });
+  const uniqueFoods = [...new Set(allFoods)];
+
+  const lines = ["\n\n【建议】"];
+
+  const diseases = normalizeDiseases(profile?.chronicDiseases);
+  if (uniqueFoods.length > 0 && diseases.length > 0) {
+    const foodAdvice = generateFoodAdvice(uniqueFoods, diseases);
+    if (foodAdvice) {
+      lines.push(foodAdvice.replace(/^\n\n/, ""));
+    }
+  }
+
+  const minMeals = days === 1 ? 2 : days === 7 ? 6 : 20;
+  if (count < minMeals) {
+    lines.push(`${rangeText}饮食记录${count}条，记录偏少。建议早中晚都记一下，方便分析是否均衡。`);
+  }
+
+  if (missingFoodDetail > 0) {
+    lines.push(`有${missingFoodDetail}条未写明具体食物，下次可说「午餐吃了米饭、青菜和鱼」，分析会更准确。`);
+  }
+
+  const carbFoods = uniqueFoods.filter((f) => /米饭|面条|馒头|包子|饺子|焖面|油条|白面包/.test(f));
+  const vegFoods = uniqueFoods.filter((f) => /青菜|菠菜|芹菜|西兰花|蔬菜|沙拉|番茄|黄瓜/.test(f));
+  if (carbFoods.length >= 2 && vegFoods.length === 0) {
+    lines.push("主食偏多、蔬菜偏少，建议每餐搭配一把蔬菜，有助于控制血糖和血压。");
+  } else if (vegFoods.length >= 2 && carbFoods.length === 0) {
+    lines.push("蔬菜摄入不错，注意搭配适量主食和优质蛋白（鱼、蛋、豆制品），营养更均衡。");
+  }
+
+  const hasHypertension = diseases.some((d) => /高血压/.test(d));
+  const hasDiabetes = diseases.some((d) => /2型糖尿病|糖尿病/.test(d));
+  if (lines.length === 1) {
+    if (hasHypertension) {
+      lines.push("整体饮食记录尚可。高血压建议每天食盐不超过5克，少吃咸菜、腊肉，多用清蒸、水煮。");
+    } else if (hasDiabetes) {
+      lines.push("整体饮食记录尚可。糖尿病建议定时定量，每餐主食约一个拳头大小，少喝含糖饮料。");
+    } else {
+      lines.push("饮食记录整体尚可，继续保持少盐少油、定时定量，有问题随时问我。");
+    }
+  }
+
+  return lines.join("\n");
+}

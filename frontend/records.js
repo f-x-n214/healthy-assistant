@@ -114,6 +114,21 @@ async function loadDetailData(type) {
     return;
   }
 
+  if (type === 'exercise' || type === 'diet') {
+    chartSection.style.display = 'none';
+    try {
+      let records = [];
+      if (type === 'exercise') records = await memoryService.queryExercises(rangeDays);
+      else records = await memoryService.queryDiet(rangeDays);
+      if (!Array.isArray(records)) records = [];
+      renderRecordsList(type, records);
+    } catch (e) {
+      recordsList.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:var(--font-lg);">加载失败，请稍后重试</div>';
+      console.error('加载记录失败:', e);
+    }
+    return;
+  }
+
   chartSection.style.display = '';
 
   try {
@@ -269,6 +284,15 @@ function renderRecordsList(type, records) {
       html += `<div class="record-item"><div class="record-item__time">${timeStr} ${typeLabel}</div><div class="record-item__value">${r.value} <span class="record-item__unit">mmol/L</span></div><div class="record-item__status record-item__status--${statusClass(status)}">${status}</div></div>`;
     } else if (type === 'weight') {
       html += `<div class="record-item"><div class="record-item__time">${timeStr}</div><div class="record-item__value">${r.value} <span class="record-item__unit">kg</span></div><div class="record-item__status record-item__status--normal">正常</div></div>`;
+    } else if (type === 'exercise') {
+      const dur = r.duration ? `${r.duration}${r.durationUnit || '分钟'}` : '';
+      const feeling = r.feeling ? ` · ${r.feeling}` : '';
+      html += `<div class="record-item"><div class="record-item__time">${timeStr}</div><div class="record-item__value">${r.action || '运动'}${dur ? ` ${dur}` : ''}</div><div class="record-item__status record-item__status--normal">${feeling || '已记录'}</div></div>`;
+    } else if (type === 'diet') {
+      const foods = Array.isArray(r.foods) && r.foods.length > 0 ? r.foods.join('、') : '（未记录具体食物）';
+      const meal = r.meal ? `${r.meal} · ` : '';
+      const amount = r.amount ? `（${r.amount}）` : '';
+      html += `<div class="record-item"><div class="record-item__time">${timeStr}</div><div class="record-item__value">${meal}${foods}${amount}</div><div class="record-item__status record-item__status--normal">饮食</div></div>`;
     }
   });
   html += '</div>';

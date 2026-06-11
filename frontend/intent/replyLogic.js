@@ -3,6 +3,8 @@
  * 说明：这里做的是“可运行的模板化回复”，不依赖大模型。
  */
 
+import { extractExerciseData, extractDietData } from "./dataExtractor.js";
+
 const DRUGS = ["降压药", "降糖药", "布洛芬", "阿司匹林", "二甲双胍", "硝苯地平", "氨氯地平", "缬沙坦"];
 
 function pickFirstMatch(text, list) {
@@ -185,6 +187,17 @@ export function mapToSubIntent({ aiIntent, utterance }) {
     return "chat.confirm";
   }
 
+  // 饮食/运动记录查询（优先于饮食建议，避免「吃了什么」被误判）
+  if (/(今天|昨天|本周|这周|最近).*(吃了什么|吃了啥|吃的东西)|查看.*饮食记录|饮食.*(记录|情况)/.test(u)) {
+    return "diet.query";
+  }
+  // 饮食记录（「刚刚吃了焖面」等，需在 query 之后判断）
+  if (/(刚刚|刚才|刚).*(吃了|喝了)(?!什么|啥)/.test(u)) return "diet.log";
+  if (/(今天|中午|早上|晚上|早餐|午餐|晚餐).*(吃了|喝了).+/.test(u) && !/吃了什么|吃了啥/.test(u)) return "diet.log";
+  if (/(查看|查询|看(看)?).*(运动|锻炼)|运动.*(记录|情况|统计)|(?:这)?周.*运动.*(多少|几次)/.test(u)) {
+    return "exercise.query";
+  }
+
   // 疾病相关饮食咨询应进入健康问答，由大模型生成具体科普回答
   if (/(高血压|低血压|糖尿病|高血糖|高血脂|冠心病)/.test(u) && /(吃什么|怎么吃|饮食|水果|蔬菜|能不能吃|可以吃吗|适合吃|忌口)/.test(u)) {
     return "health_qa.diet";
@@ -236,6 +249,7 @@ export function mapToSubIntent({ aiIntent, utterance }) {
   if (aiIntent === "INT_EXERCISE_QUERY") return "exercise.query";
   if (aiIntent === "INT_EXERCISE_RECOMMEND") return "exercise.recommend";
   if (aiIntent === "INT_DIET_LOG") return "diet.log";
+  if (aiIntent === "INT_DIET_NUTRITION") return "diet.nutrition";
   if (aiIntent === "INT_DIET_QUERY") return "diet.query";
   if (aiIntent === "INT_DIET_SUGGEST") return "diet.suggest";
   if (aiIntent === "INT_STATS_QUERY") return "stats.query";
@@ -434,10 +448,26 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
     }
 
     // 运动饮食与统计
-    case "exercise.log":
-      return "太好了，已帮您记录本次运动。\n如果方便，请再告诉我运动时长（例如30分钟）和感受（轻松/有点累）。";
-    case "exercise.query":
+    case "exercise.log": {
+      const data = extractExerciseData(null, u);
+      const action = data.action || "运动";
+      if (data.duration) {
+        return `太好了，已帮您记录：${action} ${data.duration}${data.durationUnit}。继续保持，适量运动对控制血压和血糖都有帮助！`;
+      }
+      return `好的，已帮您记录本次${action}。\n如果方便，请告诉我运动时长（例如30分钟），我可以帮您统计本周运动量。`;
+    }
+    case "exercise.query": {
+      let days = Number.isFinite(slots?.rangeDays) ? slots.rangeDays : null;
+      if (days === null) {
+        if (/今天|今日/.test(u)) days = 1;
+        else if (/最近一周|近一周|这周|本周|一周|7天|七天/.test(u)) days = 7;
+        else if (/最近一个月|近一个月|本月|这个月|一个月|30天|三十天/.test(u)) days = 30;
+      }
+      if (days === 1) return "好的，正在为您查询今天的运动记录。";
+      if (days === 7) return "好的，正在为您查询最近一周的运动记录。";
+      if (days === 30) return "好的，正在为您查询最近一个月的运动记录。";
       return "好的，我可以帮您查运动记录。\n您想看今天、本周还是本月的运动情况？";
+    }
     case "exercise.recommend": {
       // 根据用户画像中的健康状况直接给出运动建议，减少追问
       const recommendations = [];
@@ -512,9 +542,37 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
       
       return `好的，根据您的情况，我推荐这些运动：\n\n${recommendations.join("\n")}\n\n建议每周运动3-5次，每次30分钟左右。如果运动中感到不适，请立即停止休息。`;
     }
-    case "diet.log":
-      return "好的，已帮您记录这次饮食。\n如果方便，请补充大概分量（例如1碗/2个）我可以帮您更准确估算热量。";
-    case "diet.query":
+    case "diet.log": {
+      if (slots?.mergedDiet) {
+        const d = slots.mergedDiet;
+        const foods = Array.isArray(d.foods) && d.foods.length > 0 ? d.foods.join("、") : "";
+        const meal = d.meal ? `${d.meal}：` : "";
+        const amount = d.amount ? `（${d.amount}）` : "";
+        const note = d.note ? `，${d.note}` : "";
+        return `好的，已帮您补充记录：${meal}${foods}${amount}${note}。`;
+      }
+      const data = extractDietData(null, u);
+      const foods = data.foods?.length ? data.foods.join("、") : "";
+      const meal = data.meal ? `${data.meal}：` : "";
+      const amount = data.amount ? `（${data.amount}）` : "";
+      if (foods) return `好的，已帮您记录${meal}${foods}${amount}。`;
+      return "好的，已帮您记录这次饮食。\n如果方便，请补充吃了什么和大概分量（例如1碗米饭），我可以帮您分析是否适合您的健康状况。";
+    }
+    case "diet.query": {
+      let days = Number.isFinite(slots?.rangeDays) ? slots.rangeDays : null;
+      if (days === null) {
+        if (/今天|今日/.test(u)) days = 1;
+        else if (/昨天/.test(u)) days = 2;
+        else if (/最近一周|近一周|这周|本周|一周|7天|七天/.test(u)) days = 7;
+        else if (/最近一个月|近一个月|本月|这个月|一个月|30天|三十天/.test(u)) days = 30;
+      }
+      if (days === 1) return "好的，正在为您查询今天的饮食记录。";
+      if (days === 2) return "好的，正在为您查询昨天的饮食记录。";
+      if (days === 7) return "好的，正在为您查询最近一周的饮食记录。";
+      if (days === 30) return "好的，正在为您查询最近一个月的饮食记录。";
+      return "好的，我可以帮您查饮食记录。\n您想看今天、本周还是本月的饮食情况？";
+    }
+    case "diet.nutrition":
       return "好的，我可以帮您查营养信息。\n您想查询哪种食物的热量或营养（例如苹果、米饭）？";
     case "diet.suggest": {
       // 根据用户健康状况直接给出饮食建议
@@ -650,7 +708,7 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
     case "chat.goodbye":
       return ["好的，祝您平安健康。需要时随时找我。", "嗯，您好好休息。我随时都在，有需要再叫我。", "再见啦，保重身体！明天见。"][Math.floor(Math.random() * 3)];
     case "chat.help":
-      return "我可以帮您：记录用药、记录血压/血糖/体重、查询记录、做健康咨询。\n例如你可以说：「我晚上吃了布洛芬」「血压140/90」「空腹血糖6.5」「今天血压怎么样」。";
+      return "我可以帮您：记录用药、血压/血糖/体重、运动和饮食，查询记录，做健康咨询。\n例如你可以说：「今天散步30分钟」「中午吃了米饭和青菜」「查看运动记录」「今天我吃了什么」。";
     case "chat.profile": {
       if (/(我的性别是|性别是|我是男的|我是女的|我是男|我是女)/.test(u)) {
         const g = /女/.test(u) ? "女" : "男";
@@ -756,7 +814,7 @@ export function generateReply({ utterance, subIntent, slots, safety, profile }) 
     }
 
     default:
-      return "我明白了。你是想记录用药、记录血压/血糖/体重，还是查询/咨询健康问题？你可以直接用一句话说明。";
+      return "我明白了。你是想记录用药、血压/血糖/体重、运动或饮食，还是查询/咨询健康问题？你可以直接用一句话说明。";
   }
 }
 

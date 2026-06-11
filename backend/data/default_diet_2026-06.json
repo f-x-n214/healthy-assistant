@@ -3,9 +3,13 @@
   "records": [
     {
       "id": "diet_20260603_140925_cae8",
-      "foods": [],
-      "meal": "",
-      "amount": "",
+      "foods": [
+        "燕麦粥",
+        "鸡蛋",
+        "牛奶"
+      ],
+      "meal": "早餐",
+      "amount": "一碗",
       "calories": null,
       "note": "",
       "time": "2026-06-03T06:09:24.452Z",
@@ -14,14 +18,60 @@
     },
     {
       "id": "diet_20260603_153452_de4c",
-      "foods": [],
-      "meal": "早上",
-      "amount": "",
+      "foods": [
+        "米饭",
+        "青菜",
+        "鱼"
+      ],
+      "meal": "午餐",
+      "amount": "一碗",
       "calories": null,
       "note": "",
       "time": "2026-06-03T07:34:52.684Z",
       "source": "regex",
       "createdAt": "2026-06-03T15:34:52.996465"
+    },
+    {
+      "id": "diet_20260610_180000_ab12",
+      "foods": [
+        "馒头",
+        "豆腐",
+        "菠菜"
+      ],
+      "meal": "晚餐",
+      "amount": "一个",
+      "calories": null,
+      "note": "",
+      "time": "2026-06-10T10:30:00.000Z",
+      "source": "regex",
+      "createdAt": "2026-06-10T18:00:00.000000"
+    },
+    {
+      "id": "diet_20260611_201432_fff2",
+      "foods": [
+        "米线"
+      ],
+      "meal": "午餐",
+      "amount": "一碗",
+      "calories": null,
+      "note": "",
+      "time": "2026-06-11T12:14:32.204Z",
+      "source": "regex",
+      "createdAt": "2026-06-11T20:14:32.542003"
+    },
+    {
+      "id": "diet_20260611_201845_2eea",
+      "foods": [
+        "鸡蛋",
+        "豆浆"
+      ],
+      "meal": "早餐",
+      "amount": "两个",
+      "calories": null,
+      "note": "",
+      "time": "2026-06-11T12:18:45.173Z",
+      "source": "regex",
+      "createdAt": "2026-06-11T20:18:45.532078"
     }
   ],
   "statistics": {}

@@ -13,7 +13,7 @@ import { SAFETY, runSafetyCheck } from "./intent/safetyRules.js";
 import { generateReply, mapToSubIntent } from "./intent/replyLogic.js";
 import { runFastReply } from "./intent/fastReplies.js";
 import { MemoryService } from "./intent/memoryService.js";
-import { generateFoodAdvice, extractFoodsFromText } from "./intent/healthAdvisor.js";
+import { generateFoodAdvice, extractFoodsFromText, getExerciseAdviceFromRecords, getDietAdviceFromRecords } from "./intent/healthAdvisor.js";
 import {
   extractMedicationData,
   extractBloodPressureData,
@@ -21,6 +21,7 @@ import {
   extractWeightData,
   extractExerciseData,
   extractDietData,
+  mergeDietSupplement,
   extractEmotionData,
   extractReminderData,
 } from "./intent/dataExtractor.js";
@@ -37,6 +38,7 @@ const MEMORY = {
   history: [], // { role: "user"|"assistant", text: string, at: number }
   pending: {
     bp: null, // { systolic: number }
+    diet: null, // { data: object, at: number } - 饮食记录待补充餐次/饱感
     query: null, // { metric: "bp"|"medication"|"exercise"|"diet"|"stats", subIntent: string, at: number }
     qa: null, // { originalQuestion, subIntent, clarifyQuestions?, at } - 健康咨询追问上下文
     reminder: null, // { type: string, at: number } - 用于继承提醒意图
@@ -80,6 +82,7 @@ const INTENTS = {
   EXERCISE_RECOMMEND: "INT_EXERCISE_RECOMMEND",
   DIET_LOG: "INT_DIET_LOG",
   DIET_QUERY: "INT_DIET_QUERY",
+  DIET_NUTRITION: "INT_DIET_NUTRITION",
   DIET_SUGGEST: "INT_DIET_SUGGEST",
   TEMP_REMIND_SET: "INT_TEMP_REMIND_SET",
   STATS_QUERY: "INT_STATS_QUERY",
@@ -212,6 +215,24 @@ function clearPendingQueryIfResolved(subIntent, utterance) {
   if (MEMORY.pending.query.subIntent === subIntent && hasRange) {
     MEMORY.pending.query = null;
   }
+}
+
+function detectPendingDietReply(utterance) {
+  if (!MEMORY.pending.diet) return null;
+  const expired = Date.now() - MEMORY.pending.diet.at > 5 * 60 * 1000;
+  if (expired) {
+    MEMORY.pending.diet = null;
+    return null;
+  }
+  const u = (utterance ?? "").trim();
+  if (
+    /^(早餐|午餐|晚餐|早饭|中饭|晚饭)/.test(u) ||
+    /分饱|七分饱|八分饱|全饱|吃饱了/.test(u) ||
+    /^(早上|中午|晚上)\s/.test(u)
+  ) {
+    return MEMORY.pending.diet;
+  }
+  return null;
 }
 
 function rememberPendingQa(originalQuestion, subIntent, clarifyQuestions = []) {
@@ -618,6 +639,7 @@ ${memoryContext}
 必须从以下意图中选择（不可新增）：
 用药管理：med_log、med_query、med_remind_set、med_remind_cancel
 健康数据：health_log_bp、health_log_sugar、health_log_weight、health_query
+运动饮食：exercise_log、exercise_query、exercise_recommend、diet_log、diet_query、diet_suggest
 健康咨询：consult_med、consult_diet、consult_symptom
 数据看板：dashboard_self、dashboard_family
 智能对话：chat_greet、chat_emotion、chat_help
@@ -645,6 +667,13 @@ extractedData 字段说明：
    - health_log_bp: { systolic: 数字, diastolic: 数字 }
    - health_log_sugar: { value: 数字, type: "fasting"|"post" }
    - health_log_weight: { value: 数字 }
+   - exercise_log: { action: 运动类型, duration: 数字, durationUnit: "分钟"|"小时", feeling: 感受 }
+   - diet_log: { foods: [食物名称], meal: "早餐"|"午餐"|"晚餐", amount: 分量 }
+
+3. 健康数据查询：
+   - exercise_query: 查询运动记录（如"这周运动了多少"）
+   - diet_query: 查询饮食记录（如"今天我吃了什么"）
+   - diet_suggest: 饮食建议（如"午餐吃什么"）
 
 会话记忆规则（必须执行）：
 1) 如果上一轮你问了一个补充问题（如"低压是多少？"、"药名是什么？"），本轮用户只回答了数字/药名，则要结合上一轮语境补全参数，不要当作新意图。
@@ -967,9 +996,22 @@ async function saveToMemory(intent, ai, utterance) {
         break;
       }
       case "diet.log": {
-        const data = extractDietData(ai.llm_raw, utterance);
-        savedRecord = await memoryService.saveDiet(data);
-        console.log("[记忆] 饮食记录已保存:", savedRecord);
+        let data;
+        if (ai.llm_raw?.pendingDiet && ai.llm_raw?.supplement) {
+          data = mergeDietSupplement(ai.llm_raw.pendingDiet.data, ai.llm_raw.supplement);
+          MEMORY.pending.diet = null;
+        } else {
+          data = extractDietData(ai.llm_raw, utterance);
+        }
+        if (data.foods?.length > 0 || data.meal) {
+          savedRecord = await memoryService.saveDiet(data);
+          console.log("[记忆] 饮食记录已保存:", savedRecord);
+          if (data.foods?.length > 0 && !data.meal && !data.note) {
+            MEMORY.pending.diet = { data, at: Date.now() };
+          } else {
+            MEMORY.pending.diet = null;
+          }
+        }
         break;
       }
       case "remind.med_set":
@@ -1557,29 +1599,44 @@ async function enhanceReplyWithMemory(subIntent, utterance, ai) {
       }
     }
 
-    // 运动查询：返回最近记录
+    // 运动查询：返回最近记录和统计
     if (subIntent === "exercise.query") {
       const records = await memoryService.queryExercises(days);
+      const profile = await memoryService.loadProfile().catch(() => null);
       if (records.length > 0) {
         const recent = records.slice(-5);
-        extraText = `\n\n${rangeLabel}运动记录：\n` + recent.map(r =>
-          `- ${formatTime(r.time)} ${r.action || "运动"} ${r.duration || ""}${r.durationUnit || ""}`
+        let totalMinutes = 0;
+        records.forEach(r => {
+          if (r.duration) {
+            totalMinutes += r.durationUnit === "小时" ? r.duration * 60 : r.duration;
+          }
+        });
+        extraText = `\n\n${rangeLabel}运动记录（共${records.length}次${totalMinutes ? `，累计约${totalMinutes}分钟` : ""}）：\n` + recent.map(r =>
+          `- ${formatTime(r.time)} ${r.action || "运动"}${r.duration ? ` ${r.duration}${r.durationUnit || "分钟"}` : ""}${r.feeling ? `（${r.feeling}）` : ""}`
         ).join('\n');
+        extraText += getExerciseAdviceFromRecords(records, { days, profile });
       } else {
-        extraText = `\n\n${rangeLabel}暂无运动记录。`;
+        extraText = `\n\n${rangeLabel}暂无运动记录。\n您可以说「今天散步了30分钟」来记录运动。`;
+        extraText += getExerciseAdviceFromRecords([], { days, profile });
       }
     }
 
     // 饮食查询：返回最近记录
     if (subIntent === "diet.query") {
       const records = await memoryService.queryDiet(days);
+      const profile = await memoryService.loadProfile().catch(() => null);
       if (records.length > 0) {
-        const recent = records.slice(-5);
-        extraText = `\n\n${rangeLabel}饮食记录：\n` + recent.map(r =>
-          `- ${formatTime(r.time)} ${r.meal || "饮食"} ${Array.isArray(r.foods) ? r.foods.join("、") : ""}`
-        ).join('\n');
+        const recent = records.slice(-8);
+        extraText = `\n\n${rangeLabel}饮食记录（共${records.length}条）：\n` + recent.map(r => {
+          const foods = Array.isArray(r.foods) && r.foods.length > 0 ? r.foods.join("、") : (r.note || "（未记录具体食物）");
+          const meal = r.meal ? `${r.meal}：` : "";
+          const amount = r.amount ? `（${r.amount}）` : "";
+          return `- ${formatTime(r.time)} ${meal}${foods}${amount}`;
+        }).join('\n');
+        extraText += getDietAdviceFromRecords(records, { days, profile });
       } else {
-        extraText = `\n\n${rangeLabel}暂无饮食记录。`;
+        extraText = `\n\n${rangeLabel}暂无饮食记录。\n您可以说「中午吃了米饭和青菜」来记录饮食。`;
+        extraText += getDietAdviceFromRecords([], { days, profile });
       }
     }
 
@@ -1715,6 +1772,7 @@ async function assistantReply(utterance) {
   }
 
   const pendingQueryReply = detectPendingQueryReply(utterance);
+  const pendingDietReply = detectPendingDietReply(utterance);
 
   // 记录类意图：当用户已经给了关键参数时，直接使用模板化“意图识别”（跳过LLM）
   // 只有明确的结构化数据记录和查询才跳过LLM，其他需要理解的请求都调用大模型
@@ -1735,7 +1793,11 @@ async function assistantReply(utterance) {
       first.intent === "INT_BS_ADD" ||
       first.intent === "INT_WEIGHT_ADD" ||
       first.intent === "INT_EXERCISE_LOG" ||
+      first.intent === "INT_EXERCISE_QUERY" ||
       first.intent === "INT_EXERCISE_RECOMMEND" ||
+      first.intent === "INT_DIET_LOG" ||
+      first.intent === "INT_DIET_QUERY" ||
+      first.intent === "INT_DIET_NUTRITION" ||
       first.intent === "INT_MED_QUERY" ||
       first.intent === "INT_MED_MISSED" ||
       first.intent === "INT_REMIND_QUERY" ||
@@ -1746,7 +1808,17 @@ async function assistantReply(utterance) {
       first.intent === "INT_MED_ADD");
 
   let ai = null;
-  if (pendingQueryReply) {
+  if (pendingDietReply) {
+    const merged = mergeDietSupplement(pendingDietReply.data, utterance);
+    ai = {
+      intent: INTENTS.DIET_LOG,
+      slots: { dietSupplement: true, mergedDiet: merged },
+      confidence: 0.95,
+      need_clarify: false,
+      clarify_questions: [],
+      llm_raw: { pendingDiet: pendingDietReply, supplement: utterance, bypassed: true },
+    };
+  } else if (pendingQueryReply) {
     const intentMap = {
       "health_data.bp_query": INTENTS.BP_QUERY,
       "health_data.bs_query": INTENTS.BS_QUERY,

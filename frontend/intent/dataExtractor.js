@@ -279,24 +279,47 @@ export function extractEmotionData(utterance) {
  * 从大模型结果中提取提醒数据
  */
 /**
- * 将中文数字转换为阿拉伯数字
+ * 将中文数字转换为阿拉伯数字（支持：十、十五、三十、两、半）
  */
-function chineseToNumber(chinese) {
-  const charMap = { '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
-  let result = 0;
-  let temp = 0;
-  
-  for (const char of chinese) {
-    if (char === '十') {
-      temp = temp === 0 ? 10 : temp * 10;
-      result += temp;
-      temp = 0;
-    } else if (charMap[char] !== undefined) {
-      temp = temp * 10 + charMap[char];
-    }
+export function chineseToNumber(chinese) {
+  if (chinese == null || chinese === "") return 0;
+  const s = String(chinese).trim();
+  if (/^\d+(?:\.\d+)?$/.test(s)) return Number(s);
+  if (s === "半") return 0.5;
+
+  const map = { 零: 0, 一: 1, 二: 2, 两: 2, 三: 3, 四: 4, 五: 5, 六: 6, 七: 7, 八: 8, 九: 9 };
+  if (s === "十") return 10;
+  if (s.startsWith("十")) return 10 + (map[s.slice(1)] ?? 0);
+  if (s.endsWith("十")) return (map[s[0]] ?? 0) * 10;
+  if (s.includes("十")) {
+    const [head, tail] = s.split("十");
+    return (head ? (map[head] ?? Number(head)) : 1) * 10 + (tail ? (map[tail] ?? Number(tail)) : 0);
   }
-  result += temp;
-  return result || parseInt(chinese) || 0;
+  return map[s] ?? (parseInt(s, 10) || 0);
+}
+
+/**
+ * 从文本中解析运动时长（支持阿拉伯数字和中文数字）
+ */
+export function parseDurationFromText(text) {
+  const u = text ?? "";
+  let m = u.match(/(\d+(?:\.\d+)?)\s*(分钟|分|小时|hrs?|h)/i);
+  if (m) {
+    return {
+      duration: Number(m[1]),
+      durationUnit: /小时|hrs?|h/i.test(m[2]) ? "小时" : "分钟",
+    };
+  }
+  m = u.match(/(半|[零一二两三四五六七八九十百\d]+)\s*(?:个)?\s*(分钟|分|小时|钟头)/);
+  if (m) {
+    if (m[1] === "半" && /分钟|分/.test(m[2])) return { duration: 30, durationUnit: "分钟" };
+    const val = chineseToNumber(m[1]);
+    return {
+      duration: val,
+      durationUnit: /小时|钟头/.test(m[2]) ? "小时" : "分钟",
+    };
+  }
+  return { duration: null, durationUnit: "分钟" };
 }
 
 export function extractReminderData(aiResult, utterance, slots = {}) {
@@ -440,39 +463,93 @@ function parseTimeFromString(text) {
 /**
  * 从大模型结果和用户输入中提取运动记录
  */
+const EXERCISE_ACTIONS = [
+  "散步", "跑步", "快走", "慢走", "游泳", "太极", "太极拳", "瑜伽", "广场舞",
+  "骑车", "骑自行车", "骑行", "爬山", "跳绳", "打球", "羽毛球", "乒乓球",
+  "八段锦", "健身操", "拉伸", "慢跑", "快跑", "锻炼", "运动",
+];
+
 export function extractExerciseData(aiResult, utterance) {
   if (aiResult?.extractedData && Object.keys(aiResult.extractedData).length > 0) {
     const ed = aiResult.extractedData;
     return {
       action: ed.action || ed.exercise || ed.type || "",
-      duration: Number.isFinite(ed.duration) ? ed.duration : null,
+      duration: Number.isFinite(ed.duration) ? ed.duration : (ed.duration ? Number(ed.duration) : null),
       durationUnit: ed.durationUnit || ed.unit || "分钟",
       intensity: ed.intensity || "",
       feeling: ed.feeling || "",
-      time: ed.time?.iso || ed.time?.raw || new Date().toISOString(),
+      time: ed.time?.iso || ed.time?.raw || extractTimeFromText(utterance),
       source: "llm",
     };
   }
 
   const u = utterance ?? "";
-  const actionMatch = u.match(/(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车|骑自行车)/);
-  const durationMatch = u.match(/(\d+)\s*(分钟|分|小时)/);
-  let duration = null;
-  let durationUnit = "分钟";
-  if (durationMatch) {
-    duration = Number(durationMatch[1]);
-    durationUnit = durationMatch[2] === "小时" ? "小时" : "分钟";
+  let action = "";
+  for (const a of EXERCISE_ACTIONS) {
+    if (a !== "运动" && a !== "锻炼" && u.includes(a)) {
+      action = a;
+      break;
+    }
+  }
+  if (!action) {
+    const actionMatch = u.match(/(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车|骑自行车|八段锦|跳绳|打球)/);
+    action = actionMatch ? actionMatch[1] : (/锻炼|运动/.test(u) ? "锻炼" : "");
   }
 
+  const durationParsed = parseDurationFromText(u);
+  let duration = durationParsed.duration;
+  let durationUnit = durationParsed.durationUnit;
+
   return {
-    action: actionMatch ? actionMatch[1] : "",
+    action,
     duration,
     durationUnit,
-    intensity: /剧烈|高强度/.test(u) ? "高" : /慢走|轻松/.test(u) ? "低" : "",
-    feeling: /舒服|轻松/.test(u) ? "轻松" : /累|疲惫/.test(u) ? "疲惫" : "",
-    time: new Date().toISOString(),
+    intensity: /剧烈|高强度/.test(u) ? "高" : /慢走|轻松|温和/.test(u) ? "低" : "",
+    feeling: /舒服|轻松|还好/.test(u) ? "轻松" : /累|疲惫|吃力|喘/.test(u) ? "疲惫" : "",
+    time: extractTimeFromText(u),
     source: "regex",
   };
+}
+
+/**
+ * 从文本中提取食物名称（正则降级）
+ */
+function extractFoodsByRegex(text) {
+  const u = text ?? "";
+  const knownFoods = [
+    "油条", "奶油蛋糕", "肥肉", "咸菜", "腊肉", "火腿", "方便面", "卤味", "咸鱼", "薯片", "炸鸡", "烧烤",
+    "糖果", "巧克力", "奶茶", "蜂蜜", "荔枝", "芒果", "西瓜", "白米饭", "白面包", "米饭", "面条", "馒头",
+    "鸡蛋", "牛奶", "青菜", "菠菜", "芹菜", "西兰花", "苹果", "香蕉", "柚子", "草莓", "粥", "饺子", "包子",
+    "鱼", "虾", "鸡胸肉", "豆腐", "豆浆", "燕麦", "糙米", "玉米", "红薯", "土豆", "番茄", "黄瓜", "胡萝卜",
+    "猪肉", "牛肉", "鸡肉", "鸭肉", "排骨", "馄饨", "烧饼", "面包", "蛋糕", "水果", "蔬菜", "沙拉",
+  ];
+  const found = [];
+  for (const f of knownFoods) {
+    if (u.includes(f)) found.push(f);
+  }
+  if (found.length > 0) return found;
+
+  // 从「吃了X和Y」中提取
+  const ateMatch = u.match(/(?:刚刚|刚才|刚|今天)?(?:吃了|喝了|摄入了?)[了]?([^，。！？?；;]+)/);
+  if (ateMatch) {
+    const segment = ateMatch[1]
+      .replace(/(今天|昨天|早上|中午|晚上|一点|一些|大概|大约)/g, "")
+      .trim();
+    const parts = segment.split(/[和与及、,，]+/).map(s => s.trim()).filter(Boolean);
+    const cleaned = parts
+      .map(p => p.replace(/^(一个|两个|一碗|两碗|三碗|一份|半份|一点|一些|大概|大约)/, "").trim())
+      .filter(p => p.length >= 1 && p.length <= 8 && !/^(了|的|吧|呢|吗)$/.test(p));
+    if (cleaned.length > 0) return cleaned;
+  }
+
+  // 「吃了一碗焖面」兜底
+  const portionMatch = u.match(/(?:吃了|喝了)[了]?(?:一|两|三|四|半)?(?:碗|份|个|盘|杯|块|根|片|条)?([\u4e00-\u9fa5]{2,6})/);
+  if (portionMatch) {
+    const food = portionMatch[1];
+    if (!/^(刚刚|刚才|今天|早上|中午|晚上)$/.test(food)) return [food];
+  }
+
+  return [];
 }
 
 /**
@@ -481,33 +558,49 @@ export function extractExerciseData(aiResult, utterance) {
 export function extractDietData(aiResult, utterance) {
   if (aiResult?.extractedData && Object.keys(aiResult.extractedData).length > 0) {
     const ed = aiResult.extractedData;
+    const foods = ed.foods || (ed.food ? (Array.isArray(ed.food) ? ed.food : [ed.food]) : []);
     return {
-      foods: ed.foods || (ed.food ? [ed.food] : []),
+      foods: Array.isArray(foods) ? foods : [foods].filter(Boolean),
       meal: ed.meal || "",
       amount: ed.amount || "",
       calories: Number.isFinite(ed.calories) ? ed.calories : null,
       note: ed.note || "",
-      time: ed.time?.iso || ed.time?.raw || new Date().toISOString(),
+      time: ed.time?.iso || ed.time?.raw || extractTimeFromText(utterance),
       source: "llm",
     };
   }
 
   const u = utterance ?? "";
-  const mealMatch = u.match(/(早餐|午餐|晚餐|早饭|中饭|晚饭|早上|中午|晚上)/);
-  const meal = mealMatch ? mealMatch[1] : "";
-  const foods = [];
-  const foodWords = ["苹果", "香蕉", "米饭", "面条", "馒头", "鸡蛋", "牛奶", "青菜", "奶茶", "麻辣烫"];
-  for (const f of foodWords) {
-    if (u.includes(f)) foods.push(f);
-  }
+  const mealMatch = u.match(/(早餐|午餐|晚餐|早饭|中饭|晚饭|早上|中午|晚上|上午|下午)/);
+  let meal = mealMatch ? mealMatch[1] : "";
+  if (/早上|早饭|上午/.test(u)) meal = "早餐";
+  else if (/中午|中饭/.test(u)) meal = "午餐";
+  else if (/晚上|晚饭|下午/.test(u)) meal = "晚餐";
+
+  const foods = extractFoodsByRegex(u);
+  const amountMatch = u.match(/(一碗|两碗|两个|三个|一份|半份|大份|小份|一个)/);
 
   return {
     foods,
     meal,
-    amount: /一碗|两碗|两个|一份|大份/.test(u) ? (u.match(/(一碗|两碗|两个|一份|大份)/)?.[1] || "") : "",
+    amount: amountMatch ? amountMatch[1] : (/一碗|一份|一个|两碗/.test(u) ? (u.match(/(一碗|两碗|两个|三个|一份|半份|大份|小份|一个)/)?.[1] || "") : ""),
     calories: null,
     note: "",
-    time: new Date().toISOString(),
+    time: extractTimeFromText(u),
     source: "regex",
   };
+}
+
+/**
+ * 合并饮食记录的补充信息（餐次、饱感等）
+ */
+export function mergeDietSupplement(baseData, supplement) {
+  const data = { ...baseData };
+  const u = supplement ?? "";
+  if (/早餐|早饭|早上/.test(u)) data.meal = "早餐";
+  else if (/午餐|中饭|中午/.test(u)) data.meal = "午餐";
+  else if (/晚餐|晚饭|晚上/.test(u)) data.meal = "晚餐";
+  const fullness = u.match(/([五六七八九十\d]+|半)分饱|全饱|吃饱了|七分饱|八分饱/);
+  if (fullness) data.note = fullness[0];
+  return data;
 }

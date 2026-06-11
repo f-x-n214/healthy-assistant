@@ -146,15 +146,33 @@ export const FIRST_LAYER = {
       id: "exercise_log",
       intent: "INT_EXERCISE_LOG",
       pattern:
-        "(今天|刚刚|刚才|早上|晚上|中午).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(了|过).*(\\d+\\s*(分钟|分|小时))?|(今天|刚刚|刚才).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(\\d+\\s*(分钟|分|小时))",
+        "(记录|登记|帮我记).*(运动|锻炼|散步|跑步|快走|游泳|太极|瑜伽|广场舞|骑车)|" +
+        "(今天|刚刚|刚才|早上|晚上|中午|完成了?).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车|锻炼).*(了|过)(\\d+\\s*(分钟|分|小时))?|" +
+        "(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车|锻炼)\\s*(\\d+\\s*(分钟|分|小时))|" +
+        "(今天|刚刚|刚才).*(散步|跑步|快走|慢走|游泳|太极|瑜伽|广场舞|骑车).*(\\d+\\s*(分钟|分|小时))",
       flags: "i",
       handling: "路由执行（记录运动）",
-      example: "「我今天散步了30分钟」→ INT_EXERCISE_LOG",
+      example: "「我今天散步了30分钟」「散步30分钟」→ INT_EXERCISE_LOG",
+    },
+    {
+      id: "diet_history_query",
+      intent: "INT_DIET_QUERY",
+      pattern:
+        "(查看|查询|看(看)?|查一下|想知道).*(饮食|吃了|进餐|饭)|" +
+        "(今天|昨天|本周|这周|最近).*(吃了什么|吃了啥|吃的东西|饮食情况|饮食记录)|" +
+        "饮食.*(记录|情况|历史|吃了什么)|" +
+        "我.*(吃了什么|吃了啥|今天吃)",
+      flags: "i",
+      handling: "路由执行（查询饮食记录）",
+      example: "「今天我吃了什么」「查看饮食记录」→ INT_DIET_QUERY",
     },
     {
       id: "diet_log",
       intent: "INT_DIET_LOG",
-      pattern: "(今天|中午|早上|晚上|早餐|午餐|晚餐).*(吃了|喝了|摄入).+",
+      pattern:
+        "(记录|登记|帮我记).*(饮食|吃了|早餐|午餐|晚餐)|" +
+        "(刚刚|刚才|刚|今天|中午|早上|晚上|早餐|午餐|晚餐|早饭|中饭|晚饭).*(吃了|喝了|摄入)(?!什么|啥|多少|哪些).+|" +
+        "(吃了|喝了).+(和|与|还有|加).+",
       flags: "i",
       handling: "路由执行（记录饮食）",
       example: "「中午吃了米饭和青菜」→ INT_DIET_LOG",
@@ -162,7 +180,7 @@ export const FIRST_LAYER = {
     {
       id: "diet_suggest",
       intent: "INT_DIET_SUGGEST",
-      pattern: "(推荐.*吃|建议.*吃|吃什么|怎么吃|饮食建议|能吃吗|适合吃|忌口|午餐吃什么|晚餐吃什么|中午吃什么)",
+      pattern: "(推荐.*吃|建议.*吃|(?<![了])吃什么|怎么吃|饮食建议|能吃吗|适合吃|忌口|午餐吃什么|晚餐吃什么|中午吃什么)",
       flags: "i",
       handling: "路由执行（饮食建议）",
       example: "「推荐中午吃什么」→ INT_DIET_SUGGEST",
@@ -178,18 +196,22 @@ export const FIRST_LAYER = {
     {
       id: "exercise_query",
       intent: "INT_EXERCISE_QUERY",
-      pattern: "(这周|本周|今天|最近).*(运动|锻炼).*(几次|多少|怎么样|情况)|运动.*(统计|趋势|记录)",
+      pattern:
+        "(查看|查询|看(看)?|查一下|想看).*(运动|锻炼)(记录|情况|统计|历史|多少|几次)?|" +
+        "(这周|本周|今天|最近|昨天).*(运动|锻炼).*(几次|多少|怎么样|情况|了(?:多少)?)|" +
+        "运动.*(统计|趋势|记录|情况|历史)|" +
+        "(我)?(这)?(周|星期).*(运动|锻炼).*(多少|几次)",
       flags: "i",
       handling: "路由执行（查询运动）",
-      example: "「我这周运动了几次」→ INT_EXERCISE_QUERY",
+      example: "「我这周运动了多少」「查看运动记录」→ INT_EXERCISE_QUERY",
     },
     {
-      id: "diet_query",
-      intent: "INT_DIET_QUERY",
-      pattern: "(热量|卡路里|脂肪|蛋白质|维生素|营养|摄入了多少)",
+      id: "diet_nutrition_query",
+      intent: "INT_DIET_NUTRITION",
+      pattern: "(热量|卡路里|脂肪|蛋白质|维生素|营养|有多少卡|几卡)",
       flags: "i",
       handling: "路由执行（营养查询）",
-      example: "「苹果有多少热量」→ INT_DIET_QUERY",
+      example: "「苹果有多少热量」→ INT_DIET_NUTRITION",
     },
     {
       id: "stats_query",
@@ -369,6 +391,12 @@ export function runFirstLayer(utterance) {
       slots.bp_systolic = Number(m[1]);
       slots.bp_diastolic = Number(m[2]);
       slots.bp_unit = "mmHg";
+    }
+    if (r.intent === "INT_EXERCISE_QUERY" || r.intent === "INT_DIET_QUERY" || r.intent === "INT_STATS_QUERY") {
+      if (/今天|今日/.test(utterance)) slots.rangeDays = 1;
+      else if (/昨天/.test(utterance)) slots.rangeDays = 2;
+      else if (/最近一周|近一周|这周|本周|一周|7天|七天/.test(utterance)) slots.rangeDays = 7;
+      else if (/最近一个月|近一个月|本月|这个月|一个月|30天|三十天/.test(utterance)) slots.rangeDays = 30;
     }
     if (r.intent === "INT_MED_REMIND_CANCEL") {
       const chineseNumMap = { '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
